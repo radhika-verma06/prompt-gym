@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Gym — Scope</title>
+<style>
+  :root{
+    --canvas:#F6F7F5; --surface:#FFFFFF; --ink:#17252B; --subtle:#69777C;
+    --primary:#176B66; --primary-soft:#E8F1F0; --danger:#C7534B; --danger-soft:#FBEDEC;
+    --line:#E3E8E6; --line-strong:#CFD8D5;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--canvas);color:var(--ink);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:56px 28px 96px}
+  .eyebrow{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--subtle)}
+  h1{font-size:44px;line-height:1.06;letter-spacing:-.03em;margin:14px 0 10px;font-weight:650}
+  h2{font-size:13px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--subtle);margin:0 0 18px}
+  h3{font-size:16px;margin:0 0 6px;letter-spacing:-.01em}
+  p{margin:0 0 12px;color:#2E4047}
+  .lede{font-size:19px;line-height:1.5;color:#31474E;max-width:62ch;margin:0 0 22px}
+  .badge{display:inline-flex;align-items:center;gap:7px;background:var(--primary-soft);color:var(--primary);
+    border-radius:999px;padding:5px 12px;font-size:12px;font-weight:600}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--primary)}
+  .meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:26px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--subtle)}
+  .meta b{color:var(--ink);font-weight:600}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px 28px;
+    box-shadow:0 1px 2px rgba(23,37,43,.04),0 1px 3px rgba(23,37,43,.05)}
+  section{margin-top:46px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+
+  /* tabs */
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:26px;flex-wrap:wrap}
+  .tabs button{appearance:none;background:none;border:0;border-bottom:2px solid transparent;padding:11px 14px;
+    font:600 13px var(--sans);color:var(--subtle);cursor:pointer;border-radius:6px 6px 0 0}
+  .tabs button:hover{background:#EFF2F0;color:var(--ink)}
+  .tabs button[aria-selected="true"]{color:var(--primary);border-bottom-color:var(--primary)}
+  .panel[hidden]{display:none}
+
+  svg{display:block;width:100%;height:auto}
+  .note{background:var(--primary-soft);border-left:3px solid var(--primary);border-radius:0 8px 8px 0;
+    padding:12px 16px;font-size:13.5px;color:#25433F;margin-top:16px}
+  .warn{background:var(--danger-soft);border-left:3px solid var(--danger);border-radius:0 8px 8px 0;
+    padding:12px 16px;font-size:13.5px;color:#5B2A26;margin-top:16px}
+
+  /* wireframe */
+  .wf{display:grid;grid-template-columns:1.05fr 1fr;gap:12px;background:#0F1B20;border-radius:12px;padding:12px}
+  @media(max-width:700px){.wf{grid-template-columns:1fr}}
+  .pane{background:#17262C;border:1px solid #26383F;border-radius:8px;padding:14px}
+  .pane .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#7E979E;margin-bottom:10px}
+  .bar{height:8px;border-radius:4px;background:#2A3F47;margin-bottom:8px}
+  .bar.w70{width:70%} .bar.w45{width:45%} .bar.w88{width:88%}
+  .edit{height:96px;border:1px dashed #3A525A;border-radius:6px;margin:10px 0}
+  .chip{display:inline-block;height:26px;border-radius:6px;background:#1E4A47;color:#9FD8D3;
+    font:600 11px var(--mono);padding:6px 10px;margin-right:6px}
+  .case{display:flex;align-items:center;gap:8px;font:500 11.5px var(--mono);color:#9BB0B6;margin-bottom:7px}
+  .pip{width:9px;height:9px;border-radius:50%}
+  .pip.ok{background:#3FA08F} .pip.no{background:#D06A61} .pip.unk{background:#6B8188}
+
+  /* reveals */
+  details{border:1px solid var(--line);border-radius:10px;background:var(--surface);margin-bottom:10px;overflow:hidden}
+  details[open]{box-shadow:0 1px 3px rgba(23,37,43,.06)}
+  summary{cursor:pointer;padding:14px 18px;font-weight:600;font-size:14px;display:flex;justify-content:space-between;
+    align-items:center;gap:12px;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary .count{font-family:var(--mono);font-size:11px;color:var(--subtle);font-weight:500}
+  summary:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
+  .body{padding:0 18px 16px;font-size:14px;color:#2E4047}
+  .body ul{margin:0;padding-left:18px} .body li{margin-bottom:7px}
+  .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--subtle);border:1px solid var(--line-strong);border-radius:4px;padding:2px 6px}
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:12.5px;color:var(--subtle)}
+  a{color:var(--primary)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Devpost Learn · Build With AI: Basics · Planning doc 2 of 3</div>
+  <h1>Prompt Gym</h1>
+  <p class="lede">A practice gym for writing prompts. Pick a challenge, write a prompt, run it against hidden cases — and watch your score rise, or fall.</p>
+  <span class="badge"><span class="dot"></span>Scope · approved</span>
+
+  <div class="meta">
+    <span><b>Deadline</b> Oct 26, 5pm ET</span>
+    <span><b>Shape</b> proof of concept, 2–4h active work</span>
+    <span><b>Deliverables</b> public repo + 1–3 min demo video</span>
+    <span><b>Canonical</b> <a href="scope.md">scope.md</a></span>
+  </div>
+
+  <section>
+    <h2>The kernel</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>The overfitting trap</h3>
+        <p>You fix one failing case with an overly specific instruction. A case that used to pass breaks. The app highlights the regression, shows what changed, and explains that you optimised for one scenario instead of writing something that generalises.</p>
+        <p style="margin:0"><b>That “wait, my score went down?” moment is the product.</b> Delete it and this is a generic prompt linter.</p>
+      </div>
+      <div class="card">
+        <h3>And it has to be honest</h3>
+        <p>The trap emerges from test cases that are <b>diverse but consistently specified</b> — not contradictory requirements, not hidden gotchas, not scoring that shifts to manufacture a lesson.</p>
+        <p style="margin:0">A user who writes a genuinely general prompt reaches 6/6. Anything less makes the lesson a trick.</p>
+        <div class="warn">The demo’s 3/6 → 5/6 → 4/6 → 6/6 is <b>illustrative</b>. No scoring path may be tuned to reproduce it.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Journey, loop and boundary</h2>
+    <div class="tabs" role="tablist" aria-label="Scope views">
+      <button role="tab" id="t-journey" aria-controls="p-journey" aria-selected="true">User journey</button>
+      <button role="tab" id="t-loop" aria-controls="p-loop" aria-selected="false">Core loop</button>
+      <button role="tab" id="t-screen" aria-controls="p-screen" aria-selected="false">Workspace</button>
+      <button role="tab" id="t-edge" aria-controls="p-edge" aria-selected="false">Boundary</button>
+    </div>
+
+    <div class="panel" id="p-journey" role="tabpanel" aria-labelledby="t-journey">
+      <div class="card">
+        <svg viewBox="0 0 920 360" role="img" aria-label="Journey diagram: land, choose pack, write prompt, run tests, read feedback, revise, export — with a regression branch that explains overfitting">
+          <defs>
+            <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+              <path d="M0,0 L7,3.2 L0,6.4 z" fill="#8A9A9F"/>
+            </marker>
+            <marker id="arT" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+              <path d="M0,0 L7,3.2 L0,6.4 z" fill="#176B66"/>
+            </marker>
+          </defs>
+          <g font-family="Inter, system-ui, sans-serif" font-size="12.5">
+            <rect x="14" y="30" width="150" height="66" rx="9" fill="#FFFFFF" stroke="#CFD8D5"/>
+            <text x="89" y="57" text-anchor="middle" font-weight="650" fill="#17252B">Land</text>
+            <text x="89" y="76" text-anchor="middle" fill="#69777C" font-size="11">10-second orientation</text>
+
+            <rect x="194" y="30" width="150" height="66" rx="9" fill="#FFFFFF" stroke="#CFD8D5"/>
+            <text x="269" y="57" text-anchor="middle" font-weight="650" fill="#17252B">Choose a pack</text>
+            <text x="269" y="76" text-anchor="middle" fill="#69777C" font-size="11">3 packs · 6 cases each</text>
+
+            <rect x="374" y="30" width="150" height="66" rx="9" fill="#FFFFFF" stroke="#CFD8D5"/>
+            <text x="449" y="57" text-anchor="middle" font-weight="650" fill="#17252B">Write a prompt</text>
+            <text x="449" y="76" text-anchor="middle" fill="#69777C" font-size="11">objective + criteria shown</text>
+
+            <rect x="554" y="30" width="150" height="66" rx="9" fill="#176B66" stroke="#176B66"/>
+            <text x="629" y="57" text-anchor="middle" font-weight="650" fill="#FFFFFF">Run tests</text>
+            <text x="629" y="76" text-anchor="middle" fill="#C9E4E1" font-size="11">real model execution</text>
+
+            <rect x="734" y="30" width="172" height="66" rx="9" fill="#FFFFFF" stroke="#CFD8D5"/>
+            <text x="820" y="57" text-anchor="middle" font-weight="650" fill="#17252B">Per-case results</text>
+            <text x="820" y="76" text-anchor="middle" fill="#69777C" font-size="11">input hidden · response shown</text>
+
+            <rect x="734" y="190" width="172" height="86" rx="9" fill="#FFFFFF" stroke="#CFD8D5"/>
+            <text x="820" y="217" text-anchor="middle" font-weight="650" fill="#17252B">Explain the failure</text>
+            <text x="820" y="236" text-anchor="middle" fill="#69777C" font-size="11">observed behaviour, not</text>
+            <text x="820" y="251" text-anchor="middle" fill="#69777C" font-size="11">“your prompt could be clearer”</text>
+
+            <rect x="464" y="190" width="192" height="86" rx="9" fill="#E8F1F0" stroke="#176B66"/>
+            <text x="560" y="217" text-anchor="middle" font-weight="650" fill="#176B66">Regression detected</text>
+            <text x="560" y="236" text-anchor="middle" fill="#2E5B57" font-size="11">passing case now fails →</text>
+            <text x="560" y="251" text-anchor="middle" fill="#2E5B57" font-size="11">what changed + why it overfits</text>
+
+            <rect x="194" y="190" width="192" height="86" rx="9" fill="#FFFFFF" stroke="#CFD8D5"/>
+            <text x="290" y="217" text-anchor="middle" font-weight="650" fill="#17252B">Revise</text>
+            <text x="290" y="236" text-anchor="middle" fill="#69777C" font-size="11">attempt history keeps</text>
+            <text x="290" y="251" text-anchor="middle" fill="#69777C" font-size="11">the trajectory visible</text>
+
+            <rect x="14" y="190" width="150" height="86" rx="9" fill="#FFFFFF" stroke="#CFD8D5"/>
+            <text x="89" y="217" text-anchor="middle" font-weight="650" fill="#17252B">Export</text>
+            <text x="89" y="236" text-anchor="middle" fill="#69777C" font-size="11">prompt · results</text>
+            <text x="89" y="251" text-anchor="middle" fill="#69777C" font-size="11">history · lessons</text>
+
+            <path d="M164 63 H190" stroke="#8A9A9F" stroke-width="1.5" marker-end="url(#ar)"/>
+            <path d="M344 63 H370" stroke="#8A9A9F" stroke-width="1.5" marker-end="url(#ar)"/>
+            <path d="M524 63 H550" stroke="#8A9A9F" stroke-width="1.5" marker-end="url(#ar)"/>
+            <path d="M704 63 H730" stroke="#8A9A9F" stroke-width="1.5" marker-end="url(#ar)"/>
+            <path d="M820 96 V186" stroke="#8A9A9F" stroke-width="1.5" marker-end="url(#ar)"/>
+            <path d="M734 233 H660" stroke="#176B66" stroke-width="1.5" marker-end="url(#arT)"/>
+            <path d="M464 233 H390" stroke="#176B66" stroke-width="1.5" marker-end="url(#arT)"/>
+            <path d="M194 233 H168" stroke="#8A9A9F" stroke-width="1.5" marker-end="url(#ar)"/>
+            <path d="M290 190 V132 H420 V99" stroke="#8A9A9F" stroke-width="1.5" fill="none" marker-end="url(#ar)" stroke-dasharray="4 3"/>
+            <text x="300" y="122" fill="#69777C" font-size="11">next attempt</text>
+            <text x="560" y="292" text-anchor="middle" fill="#69777C" font-size="11">the memorable beat</text>
+          </g>
+        </svg>
+      </div>
+      <div class="note">Every result on this path comes from a real evaluation. If a case can’t be judged reliably, it is shown as uncertain — never counted as a failure, never counted as a pass to protect a number.</div>
+    </div>
+
+    <div class="panel" id="p-loop" role="tabpanel" aria-labelledby="t-loop" hidden>
+      <div class="grid2">
+        <div class="card">
+          <h3>The repetition</h3>
+          <p>Pick a pack → read the objective and criteria → write → run → read what actually broke → edit → rerun.</p>
+          <p style="margin:0">They come back because the next attempt is a hypothesis, not a repeat.</p>
+        </div>
+        <div class="card">
+          <h3>What has to be true each time</h3>
+          <ul style="margin:0;padding-left:18px">
+            <li>Hidden inputs, visible model responses — memorising has to be harder than learning.</li>
+            <li>Same model, same settings: a score change means the prompt changed.</li>
+            <li>Feedback names the behaviour, not the vibe.</li>
+            <li>Regressions are surfaced, not buried in the score.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-screen" role="tabpanel" aria-labelledby="t-screen" hidden>
+      <div class="wf" aria-label="Wireframe: single workspace, challenge and editor left, tests and feedback right">
+        <div class="pane">
+          <div class="lbl">Left · challenge + editor</div>
+          <div class="bar w45"></div>
+          <div class="bar w70"></div>
+          <div class="chip">objective</div><div class="chip">criteria</div><div class="chip">example</div>
+          <div class="edit"></div>
+          <div class="bar w88"></div>
+        </div>
+        <div class="pane">
+          <div class="lbl">Right · tests + feedback</div>
+          <div class="case"><span class="pip ok"></span>case 1 passed · JSON shape valid</div>
+          <div class="case"><span class="pip no"></span>case 2 failed · added missing field</div>
+          <div class="case"><span class="pip ok"></span>case 3 passed</div>
+          <div class="case"><span class="pip no"></span>case 4 failed · broke on ambiguity</div>
+          <div class="case"><span class="pip unk"></span>case 5 uncertain · shown honestly</div>
+          <div class="case"><span class="pip ok"></span>case 6 passed</div>
+          <div class="bar w45" style="margin-top:12px"></div>
+          <div class="bar w70"></div>
+        </div>
+      </div>
+      <div class="note">One workspace, not a page-per-step flow. Score and attempt history stay visible — the rise and the drop are the teaching device.</div>
+    </div>
+
+    <div class="panel" id="p-edge" role="tabpanel" aria-labelledby="t-edge" hidden>
+      <details>
+        <summary>In scope — the whole proof of concept <span class="count">now</span></summary>
+        <div class="body">
+          <ul>
+            <li>Three packs: structured extraction · rules under customer requests · rewriting without losing information.</li>
+            <li>Depth over breadth: one exceptional pack plus two simpler polished ones beats three unreliable experiences.</li>
+            <li>One editor, one workspace, six cases per pack.</li>
+            <li>Visible objective, criteria and a good-prompt example on first arrival.</li>
+            <li>Actionable per-case feedback; real model responses; hidden inputs.</li>
+            <li>Score history and regression detection with attempt comparison.</li>
+            <li>Export as clean Markdown or JSON: prompt, results, history, lessons.</li>
+          </ul>
+        </div>
+      </details>
+      <details>
+        <summary>Later — wanted, not now <span class="count">after the loop works</span></summary>
+        <div class="body">
+          <ul>
+            <li>The hint coach: “try defining how the model should handle missing information” — never a finished prompt.</li>
+            <li>More packs and difficulty tiers; personal best, iteration count, principles summary.</li>
+            <li>A public deployment — strengthens the submission, but only after the product works and the demo is excellent.</li>
+          </ul>
+        </div>
+      </details>
+      <details>
+        <summary>Cut — and why <span class="count">named, not silent</span></summary>
+        <div class="body">
+          <ul>
+            <li><b>Auth and accounts</b> — no identity needed to prove the loop.</li>
+            <li><b>Database</b> — history needs to survive the session and the export, nothing more.</li>
+            <li><b>Feed, leaderboards, XP, profiles</b> — none of it teaches prompting.</li>
+            <li><b>A large challenge library</b> — three deep packs beat fifteen shallow ones; depth is where the trap lives.</li>
+            <li><b>Extra integrations</b> — the model call and the export are the whole system.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Open questions handed to the spec</h2>
+    <div class="card">
+      <ul style="margin:0;padding-left:18px;font-size:14px">
+        <li><b>Real execution means a real model API</b> — provider, model, key ownership, cost per demo run. Biggest schedule risk.</li>
+        <li><b>Trustworthy scoring</b> — which checks are deterministic, where a constrained judge is genuinely needed, how uncertainty is displayed.</li>
+        <li><b>Stable comparisons</b> — fixed settings so a delta means a prompt change, not the dice.</li>
+        <li><b>Engineering the trap honestly</b> — diverse but consistently specified cases; not contradictory requirements, not a switch.</li>
+        <li><b>Ten-second orientation</b> — example, criteria and objective fitting one screen without crowding the editor.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Visual companion to <a href="scope.md">scope.md</a>, which stays canonical. Next: <b>3-prd</b> — every screen, every behavior.</footer>
+</div>
+
+<script>
+  (function () {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+    var panels = tabs.map(function (t) { return document.getElementById(t.getAttribute('aria-controls')); });
+
+    function select(i) {
+      tabs.forEach(function (t, j) {
+        var on = i === j;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+        panels[j].hidden = !on;
+      });
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { select(i); });
+      t.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault();
+        var next = e.key === 'ArrowRight' ? (i + 1) % tabs.length : (i - 1 + tabs.length) % tabs.length;
+        select(next); tabs[next].focus();
+      });
+    });
+    // Progressive enhancement: without JS every panel stays visible.
+    select(0);
+  })();
+</script>
+</body>
+</html>

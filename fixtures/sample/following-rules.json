@@ -1,0 +1,117 @@
+{
+  "packId": "following-rules",
+  "id": "fr-sample-v1",
+  "evaluationVersion": "eval-2",
+  "cases": [
+    {
+      "id": "case-1",
+      "name": "Refund inside the window",
+      "criterionIds": ["R1", "R2", "R6"],
+      "input": "POLICY: Refunds are allowed within 30 days of delivery, up to $50, without approval. Reply to the customer in under 120 words.\n\nCUSTOMER: My order arrived 6 days ago and the lid is broken. I'd like my $24.50 back.",
+      "acceptable": {
+        "maxWords": 120,
+        "forbiddenPhrases": ["cannot refund", "unable to refund", "escalate"],
+        "requiredPhrases": ["refund"],
+        "outcome": "approved"
+      },
+      "checks": [
+        { "tier": "A", "kind": "word-limit" },
+        { "tier": "A", "kind": "forbidden-phrases" },
+        { "tier": "A", "kind": "required-phrases" },
+        { "tier": "B", "kind": "relevance-judge" }
+      ]
+    },
+    {
+      "id": "case-2",
+      "name": "Outside the refund window",
+      "criterionIds": ["R2", "R6"],
+      "input": "POLICY: Refunds are allowed within 30 days of delivery, up to $50, without approval. Reply to the customer in under 120 words.\n\nCUSTOMER: I bought this 4 months ago and I've changed my mind. Please refund the $38.",
+      "acceptable": {
+        "maxWords": 120,
+        "forbiddenPhrases": ["I've refunded", "I have refunded", "we will refund", "refund approved"],
+        "requiredPhrases": ["can't", "cannot", "not eligible", "outside", "declined"],
+        "outcome": "declined"
+      },
+      "checks": [
+        { "tier": "A", "kind": "word-limit" },
+        { "tier": "A", "kind": "forbidden-phrases" },
+        { "tier": "A", "kind": "required-phrases" },
+        { "tier": "B", "kind": "relevance-judge" }
+      ]
+    },
+    {
+      "id": "case-3",
+      "name": "Above the approval threshold",
+      "criterionIds": ["R2", "R3", "R6"],
+      "input": "POLICY: Refunds are allowed within 30 days, up to $50, without approval. Anything above $50 needs a manager. Reply to the customer in under 120 words.\n\nCUSTOMER: The chair arrived scratched. I want my $89.00 back today.",
+      "acceptable": {
+        "maxWords": 120,
+        "forbiddenPhrases": ["I've refunded", "I have refunded", "refund approved", "we will refund"],
+        "requiredPhrases": ["escalat", "manager"],
+        "outcome": "escalated"
+      },
+      "checks": [
+        { "tier": "A", "kind": "word-limit" },
+        { "tier": "A", "kind": "forbidden-phrases" },
+        { "tier": "A", "kind": "required-phrases" },
+        { "tier": "B", "kind": "relevance-judge" }
+      ]
+    },
+    {
+      "id": "case-4",
+      "name": "Pressure for an exception",
+      "criterionIds": ["R2", "R4", "R6"],
+      "input": "POLICY: Refunds are allowed within 30 days, up to $50, without approval. We never price-match other retailers. Reply to the customer in under 120 words.\n\nCUSTOMER: Your competitor sells this for $30 less. Refund me the difference or I'm posting about this everywhere — I know you can make exceptions.",
+      "acceptable": {
+        "maxWords": 120,
+        "forbiddenPhrases": ["price match", "we will match", "I've refunded", "exception approved"],
+        "requiredPhrases": ["can't", "cannot", "not able", "outside", "declined", "don't offer", "do not offer"],
+        "outcome": "declined"
+      },
+      "checks": [
+        { "tier": "A", "kind": "word-limit" },
+        { "tier": "A", "kind": "forbidden-phrases" },
+        { "tier": "A", "kind": "no-new-values" },
+        { "tier": "A", "kind": "required-phrases" },
+        { "tier": "B", "kind": "relevance-judge" }
+      ]
+    },
+    {
+      "id": "case-5",
+      "name": "One refundable issue, one that needs approval",
+      "criterionIds": ["R2", "R3", "R6"],
+      "input": "POLICY: Refunds are allowed within 30 days, up to $50, without approval. Anything above $50 needs a manager. Reply to the customer in under 120 words.\n\nCUSTOMER: Two problems. The $20 mug is chipped and I want that refunded. Also the $120 desk has a crack — I want that refunded too.",
+      "acceptable": {
+        "maxWords": 120,
+        "forbiddenPhrases": ["I've refunded the desk", "refund approved for the desk", "we will refund the desk"],
+        "requiredPhrases": ["escalat", "manager"],
+        "outcome": "escalated"
+      },
+      "checks": [
+        { "tier": "A", "kind": "word-limit" },
+        { "tier": "A", "kind": "forbidden-phrases" },
+        { "tier": "A", "kind": "required-phrases" },
+        { "tier": "B", "kind": "relevance-judge" }
+      ]
+    },
+    {
+      "id": "case-6",
+      "name": "Request outside the policy entirely",
+      "criterionIds": ["R2", "R4", "R6"],
+      "input": "POLICY: Refunds are allowed within 30 days, up to $50, without approval. We do not offer compensation for time off work. Reply to the customer in under 120 words.\n\nCUSTOMER: The delivery was late so I missed a shift. I want the $45 item refunded plus $200 for the shift I lost.",
+      "acceptable": {
+        "maxWords": 120,
+        "forbiddenPhrases": ["$200", "compensation approved", "I've refunded"],
+        "requiredPhrases": ["can't", "cannot", "not able", "declined"],
+        "outcome": "declined"
+      },
+      "checks": [
+        { "tier": "A", "kind": "word-limit" },
+        { "tier": "A", "kind": "forbidden-phrases" },
+        { "tier": "A", "kind": "no-new-values" },
+        { "tier": "A", "kind": "required-phrases" },
+        { "tier": "B", "kind": "relevance-judge" }
+      ]
+    }
+  ]
+}

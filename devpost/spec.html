@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Gym — Technical Spec companion</title>
+<style>
+  :root{
+    --bg:#F7F4EB; --card:#fff; --navy:#21396A; --orange:#F8AB51; --green:#64BFA4; --coral:#E87474;
+    --ink:#252936; --soft:#5B6172; --line:#E7E2D6; --navy-soft:#EAEEF6; --green-soft:#E8F5F1; --amber-soft:#FDF3E2;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:"Nunito Sans",-apple-system,"Segoe UI",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.6 var(--sans)}
+  .wrap{max-width:1080px;margin:0 auto;padding:54px 26px 88px}
+  .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:#B8781F}
+  h1{font-size:40px;line-height:1.06;letter-spacing:-.025em;margin:12px 0 10px;font-weight:800}
+  h2{font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin:0 0 16px}
+  h3{margin:0 0 6px;font-size:16px}
+  p{margin:0 0 11px;color:#31364A}
+  .lede{font-size:18px;color:#3B4157;max-width:66ch}
+  .badge{display:inline-flex;align-items:center;gap:7px;background:var(--navy-soft);color:var(--navy);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:800}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--orange)}
+  .meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--soft)}
+  .meta b{color:var(--ink)}
+  section{margin-top:44px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 26px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:840px){.grid2{grid-template-columns:1fr}}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:24px;flex-wrap:wrap}
+  .tabs button{appearance:none;background:none;border:0;border-bottom:2px solid transparent;padding:10px 13px;
+    font:800 12.5px var(--sans);color:var(--soft);cursor:pointer;border-radius:6px 6px 0 0}
+  .tabs button:hover{background:#F0EDE3;color:var(--ink)}
+  .tabs button[aria-selected="true"]{color:var(--navy);border-bottom-color:var(--orange)}
+  .panel[hidden]{display:none}
+  svg{display:block;width:100%;height:auto}
+  ol.steps{margin:0;padding-left:0;list-style:none;counter-reset:s}
+  ol.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line);font-size:14.3px}
+  ol.steps li:last-child{border-bottom:0}
+  ol.steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;background:var(--navy-soft);color:var(--navy);
+    display:grid;place-items:center;font:800 12px var(--mono)}
+  ol.steps b{color:var(--ink)}
+  code{font:12.5px var(--mono);background:#FBFAF6;border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+  details{border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:10px}
+  summary{cursor:pointer;padding:14px 18px;font-weight:800;font-size:14px;display:flex;justify-content:space-between;gap:12px;list-style:none;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary .k{font:700 11px var(--mono);color:var(--soft)}
+  .body{padding:0 18px 16px;font-size:14px;color:#31364A}
+  .body ul{margin:0;padding-left:18px}.body li{margin-bottom:6px}
+  pre{background:#1B2440;color:#DDE5F5;border-radius:12px;padding:16px 18px;overflow-x:auto;font:12.5px/1.55 var(--mono);margin:0}
+  .note{background:var(--navy-soft);border-left:3px solid var(--navy);border-radius:0 8px 8px 0;padding:11px 15px;font-size:13.5px;color:#2A3A5C;margin-top:14px}
+  .warn{background:#FCECEC;border-left:3px solid var(--coral);border-radius:0 8px 8px 0;padding:11px 15px;font-size:13.5px;color:#5F2A2A;margin-top:14px}
+  .ok{background:var(--green-soft);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:11px 15px;font-size:13.5px;color:#1E5B4B;margin-top:14px}
+  .tag{display:inline-block;font:800 10.5px var(--mono);border-radius:6px;padding:3px 8px;letter-spacing:.04em}
+  .tag.tierA{background:var(--green-soft);color:#1E6B57}
+  .tag.tierB{background:var(--amber-soft);color:#8A5A12}
+  .tag.rec{background:var(--navy-soft);color:var(--navy)}
+  footer{margin-top:52px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--soft)}
+  a{color:var(--navy)}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Devpost Learn · Technical spec · visual companion</div>
+  <h1>Prompt Gym — how it's built</h1>
+  <p class="lede">Two screens, one hidden worker, no database. The whole architecture exists to keep the hidden tests on the server and the scoring honest.</p>
+  <span class="badge"><span class="dot"></span>Approved — five refinements incorporated</span>
+
+  <div class="meta">
+    <span><b>Canonical</b> <a href="spec.md">spec.md</a></span>
+    <span><b>Product</b> <a href="prd.html">prd companion</a></span>
+    <span><b>Design</b> <a href="design-preview.html">design preview</a></span>
+    <span><b>Calls per run</b> 7 (6 cases + 1 judge)</span>
+  </div>
+
+  <section>
+    <h2>The two decisions that shape everything</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>Hidden inputs never reach the browser</h3>
+        <p>Production fixtures arrive from deployment configuration, not from the repository. The browser sends only your prompt; the server pairs it with each hidden input and returns a description of what happened.</p>
+        <p style="margin:0">Not in the page, not in a response body, not in DevTools — and not in the public repo either.</p>
+        <div class="ok">The repo ships <b>labelled sample fixtures</b> so a clone runs without secrets; the workspace shows a “sample fixtures” badge whenever they're in use.</div>
+      </div>
+      <div class="card">
+        <h3>Rules decide, judgement is the exception</h3>
+        <p>Five of the six flagship criteria are checked by code: valid JSON, exact fields and types, no invented values, amounts in an acceptable set, request counts.</p>
+        <p style="margin:0">One criterion is interpretive and goes to a judge model — which never sees your prompt, only the criterion, the input and the response.</p>
+        <div class="warn">A malformed judge verdict becomes <code>uncertain</code>, never a failure. An API error leaves the denominator entirely.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Architecture</h2>
+    <div class="card">
+      <svg viewBox="0 0 900 400" role="img" aria-label="Architecture: browser (landing and workspace) calls the run route on the server, which holds hidden cases and calls the model provider; results pass an echo-risk check before returning to the browser">
+        <defs>
+          <marker id="ar1" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#8A93A8"/></marker>
+          <marker id="ar2" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#21396A"/></marker>
+          <marker id="ar3" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#64BFA4"/></marker>
+        </defs>
+        <g font-family="Nunito Sans, system-ui, sans-serif" font-size="12.5">
+          <!-- browser plane -->
+          <rect x="14" y="22" width="880" height="150" rx="14" fill="#FFFFFF" stroke="#E7E2D6"/>
+          <text x="32" y="46" font-weight="800" fill="#5B6172" font-size="11" letter-spacing="1.4">BROWSER — WHAT THE USER SEES</text>
+
+          <rect x="34" y="62" width="196" height="88" rx="11" fill="#F7F4EB" stroke="#DCD6C6"/>
+          <text x="132" y="88" text-anchor="middle" font-weight="800">Landing page</text>
+          <text x="132" y="107" text-anchor="middle" fill="#5B6172" font-size="11">three packs · static</text>
+          <text x="132" y="124" text-anchor="middle" fill="#5B6172" font-size="11">objective · criteria · example</text>
+
+          <rect x="252" y="62" width="196" height="88" rx="11" fill="#F7F4EB" stroke="#DCD6C6"/>
+          <text x="350" y="88" text-anchor="middle" font-weight="800">Workspace</text>
+          <text x="350" y="107" text-anchor="middle" fill="#5B6172" font-size="11">editor · case rows · score</text>
+          <text x="350" y="124" text-anchor="middle" fill="#5B6172" font-size="11">focus mode · charts</text>
+
+          <rect x="470" y="62" width="196" height="88" rx="11" fill="#FFFFFF" stroke="#DCD6C6"/>
+          <text x="568" y="88" text-anchor="middle" font-weight="800">sessionStorage</text>
+          <text x="568" y="107" text-anchor="middle" fill="#5B6172" font-size="11">attempts, last 20</text>
+          <text x="568" y="124" text-anchor="middle" fill="#5B6172" font-size="11">cleared when the tab closes</text>
+
+          <rect x="688" y="62" width="186" height="88" rx="11" fill="#FFFFFF" stroke="#DCD6C6"/>
+          <text x="781" y="88" text-anchor="middle" font-weight="800">Export</text>
+          <text x="781" y="107" text-anchor="middle" fill="#5B6172" font-size="11">Markdown · JSON</text>
+          <text x="781" y="124" text-anchor="middle" fill="#5B6172" font-size="11">the only durable copy</text>
+
+          <!-- server plane -->
+          <rect x="14" y="200" width="880" height="182" rx="14" fill="#FFFFFF" stroke="#E7E2D6"/>
+          <text x="32" y="224" font-weight="800" fill="#5B6172" font-size="11" letter-spacing="1.4">SERVER — WHAT THE USER NEVER SEES</text>
+
+          <rect x="34" y="240" width="176" height="118" rx="11" fill="#21396A" stroke="#21396A"/>
+          <text x="122" y="264" text-anchor="middle" font-weight="800" fill="#fff">POST /api/run</text>
+          <text x="122" y="283" text-anchor="middle" fill="#C7D2E8" font-size="11">{ packId, prompt }</text>
+          <text x="122" y="300" text-anchor="middle" fill="#C7D2E8" font-size="11">looks up the pack</text>
+          <text x="122" y="317" text-anchor="middle" fill="#C7D2E8" font-size="11">concurrency 3</text>
+
+          <rect x="232" y="240" width="176" height="118" rx="11" fill="#FCECEC" stroke="#E87474"/>
+          <text x="320" y="264" text-anchor="middle" font-weight="800" fill="#9B3B3B">Hidden cases</text>
+          <text x="320" y="283" text-anchor="middle" fill="#7A4141" font-size="11">inputs · acceptable answers</text>
+          <text x="320" y="300" text-anchor="middle" fill="#7A4141" font-size="11">six per pack</text>
+          <text x="320" y="317" text-anchor="middle" fill="#7A4141" font-size="11">never serialised out</text>
+
+          <rect x="430" y="240" width="176" height="118" rx="11" fill="#fff" stroke="#E7E2D6"/>
+          <text x="518" y="264" text-anchor="middle" font-weight="800">Validators</text>
+          <text x="518" y="284" text-anchor="middle" fill="#1E6B57" font-size="11">Tier A · rules (5 criteria)</text>
+          <text x="518" y="301" text-anchor="middle" fill="#8A5A12" font-size="11">Tier B · judge (1 criterion)</text>
+          <text x="518" y="321" text-anchor="middle" fill="#5B6172" font-size="11">verdict per case</text>
+
+          <rect x="628" y="240" width="110" height="118" rx="11" fill="#E8F5F1" stroke="#64BFA4"/>
+          <text x="683" y="272" text-anchor="middle" font-weight="800" fill="#1E6B57">Echo-risk</text>
+          <text x="683" y="291" text-anchor="middle" fill="#1E6B57" font-size="11">check → redact</text>
+          <text x="683" y="310" text-anchor="middle" fill="#1E6B57" font-size="11">withheld marker</text>
+
+          <rect x="754" y="240" width="120" height="118" rx="11" fill="#fff" stroke="#E7E2D6"/>
+          <text x="814" y="272" text-anchor="middle" font-weight="800">Model API</text>
+          <text x="814" y="291" text-anchor="middle" fill="#5B6172" font-size="11">6 case calls</text>
+          <text x="814" y="308" text-anchor="middle" fill="#5B6172" font-size="11">+ 1 judge call</text>
+          <text x="814" y="325" text-anchor="middle" fill="#5B6172" font-size="11">key stays here</text>
+
+          <!-- arrows -->
+          <path d="M350 150 V236" stroke="#21396A" stroke-width="1.6" marker-end="url(#ar2)"/>
+          <text x="360" y="180" fill="#21396A" font-size="11">your prompt only</text>
+          <path d="M122 240 V154" stroke="#64BFA4" stroke-width="1.6" marker-end="url(#ar3)" stroke-dasharray="5 3"/>
+          <text x="132" y="196" fill="#1E5B4B" font-size="11">states, observed behaviour, redacted responses</text>
+          <path d="M210 299 H228" stroke="#8A93A8" stroke-width="1.5" marker-end="url(#ar1)"/>
+          <path d="M408 299 H426" stroke="#8A93A8" stroke-width="1.5" marker-end="url(#ar1)"/>
+          <path d="M606 299 H624" stroke="#8A93A8" stroke-width="1.5" marker-end="url(#ar1)"/>
+          <path d="M738 299 H750" stroke="#8A93A8" stroke-width="1.5" marker-end="url(#ar1)"/>
+        </g>
+      </svg>
+      <div class="note">The dashed green arrow is the whole point: what comes back is a verdict, a one-sentence observation and a redacted response. <b>No inputs, no expected answers</b> — so nothing in the browser can disclose a case.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What happens when you press Run Tests</h2>
+    <div class="tabs" role="tablist" aria-label="Spec views">
+      <button role="tab" id="t-j" aria-controls="p-j" aria-selected="true">Journey</button>
+      <button role="tab" id="t-c" aria-controls="p-c" aria-selected="false">Components</button>
+      <button role="tab" id="t-f" aria-controls="p-f" aria-selected="false">Files</button>
+      <button role="tab" id="t-r" aria-controls="p-r" aria-selected="false">Risk &amp; honesty</button>
+    </div>
+
+    <div class="panel" id="p-j" role="tabpanel" aria-labelledby="t-j">
+      <div class="card">
+        <ol class="steps">
+          <li><span>You press <b>Run Tests</b>.</span></li>
+          <li><span>The browser sends <code>{ packId, prompt }</code> to <code>/api/run</code> — <b>your prompt and nothing else</b>.</span></li>
+          <li><span>The server looks up the pack and pairs your prompt with each hidden case input, three at a time.</span></li>
+          <li><span>Each response goes to its validator — rules for five criteria, the judge for one.</span></li>
+          <li><span>The echo-risk check compares each response against the case's input and acceptable answers, redacting when needed.</span></li>
+          <li><span>Cases stream back as they resolve, with state, tier, observation and redacted response.</span></li>
+          <li><span>The score arithmetic runs: <code>passed / scored</code>, with uncertain and errored counted separately.</span></li>
+          <li><span>This attempt is compared with the previous one — flips are observed, explanations are only inferred when the evidence qualifies.</span></li>
+          <li><span>The attempt is written to <code>sessionStorage</code>, and the chart, changes panel and lesson update.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="panel" id="p-c" role="tabpanel" aria-labelledby="t-c" hidden>
+      <details open>
+        <summary>Pack content <span class="k">lib/packs/</span></summary>
+        <div class="body"><ul>
+          <li>Static TypeScript: three packs, six criteria (C1–C6) each, six cases each.</li>
+          <li>A case carries its hidden input, acceptable answers, criterion IDs and validator.</li>
+          <li>Ships in the bundle, but only server code reads <code>input</code> and <code>acceptable</code>.</li>
+        </ul></div>
+      </details>
+      <details>
+        <summary>Run route <span class="k">app/api/run/route.ts</span></summary>
+        <div class="body"><ul>
+          <li>The only endpoint. Validates the request with Zod, resolves the pack server-side.</li>
+          <li>Runs six cases at concurrency 3, streams results as they resolve.</li>
+          <li>Never returns an input or an acceptable answer.</li>
+        </ul></div>
+      </details>
+      <details>
+        <summary>Model client and frozen settings <span class="k">lib/model/</span></summary>
+        <div class="body"><ul>
+          <li>One place the provider is called; OpenAI-compatible base URL so the provider is an env var.</li>
+          <li>Frozen per session: model IDs, <code>temperature: 0</code>, max tokens, <code>wrapperVersion</code>.</li>
+          <li>Every attempt records them, so a score change is attributable to the prompt.</li>
+        </ul></div>
+      </details>
+      <details>
+        <summary>Validators <span class="k">lib/validators/</span></summary>
+        <div class="body">
+          <p><span class="tag tierA">TIER A</span> JSON parses · exact fields and types · required fields · no fabricated values · amounts in acceptable set · request counts.</p>
+          <p style="margin:0"><span class="tag tierB">TIER B</span> One criterion. Receives criterion + input + response, never the prompt. Returns <code>{verdict, reason}</code>, validated with Zod; unusable output → <code>uncertain</code>.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Redaction <span class="k">lib/redact.ts</span></summary>
+        <div class="body"><ul>
+          <li>Length-cap every response; render as inert text.</li>
+          <li>Compare against the case input and acceptable answers, normalised, to catch quotes and reformats.</li>
+          <li>On a match: substitute the withheld marker plus a behavioural description.</li>
+        </ul></div>
+      </details>
+      <details>
+        <summary>Scoring and regression <span class="k">lib/scoring.ts · lib/regression.ts</span></summary>
+        <div class="body"><ul>
+          <li><code>passed / scored</code>; uncertain and unresolved excluded from the denominator.</li>
+          <li>Delta and best attempt only compare matching scored counts.</li>
+          <li>Regression returns observations always, inference only past a written evidence threshold.</li>
+        </ul></div>
+      </details>
+      <details>
+        <summary>Attempt store and export <span class="k">lib/attempts.ts · lib/export/</span></summary>
+        <div class="body"><ul>
+          <li>Attempts in <code>sessionStorage</code>, capped at 20; nothing server-side.</li>
+          <li>Markdown by default, JSON available; records model, settings and timestamp.</li>
+          <li>Contains only what was already on screen.</li>
+        </ul></div>
+      </details>
+    </div>
+
+    <div class="panel" id="p-f" role="tabpanel" aria-labelledby="t-f" hidden>
+      <pre>prompt-gym/
+├── app/
+│   ├── layout.tsx                     # shell, fonts
+│   ├── page.tsx                       # landing · three pack cards
+│   ├── globals.css                    # Tailwind + design tokens
+│   ├── workspace/[packId]/page.tsx    # the split workspace
+│   └── api/run/route.ts               # the only server endpoint
+├── components/
+│   ├── landing/    PackCard · HowItWorks
+│   └── workspace/  PromptEditor · RunButton · ScoreHeader · ProgressChart
+│                   CaseRow · CaseDetail · FocusMode · ChangesPanel
+│                   RegressionPanel · LessonSummary · ExportMenu
+├── lib/
+│   ├── packs/      types · structured-extraction · following-rules · rewrite-meaning
+│   ├── model/      client.ts (the only provider call) · settings.ts (frozen)
+│   ├── validators/ deterministic.ts · judge.ts · index.ts
+│   ├── redact.ts   scoring.ts   regression.ts   attempts.ts
+│   └── export/     markdown.ts · json.ts
+├── tests/          validators · scoring · regression · redact · export (.test.ts)
+│                   flow.spec.ts (one end-to-end browser pass)
+├── devpost/        learner-profile.md (git-ignored) · scope · prd · spec
+├── .env.example    GROQ_API_KEY= (no value)
+├── README.md
+└── package.json</pre>
+      <div class="note">Server-only files are <code>lib/packs/*</code> (inputs), <code>lib/validators/*</code>, <code>lib/redact.ts</code> and the run route. Everything under <code>components/</code> only ever sees sanitised results.</div>
+    </div>
+
+    <div class="panel" id="p-r" role="tabpanel" aria-labelledby="t-r" hidden>
+      <div class="grid2">
+        <div class="card">
+          <h3>Where it will break, and what you see</h3>
+          <ul style="margin:0;padding-left:18px;font-size:14px">
+            <li><b>Rate limit or timeout mid-run</b> → run marked incomplete, those cases <code>unresolved</code>, Retry offered, prompt untouched.</li>
+            <li><b>Judge returns junk</b> → case becomes <code>uncertain</code> with the reason, out of the denominator.</li>
+            <li><b>No API key</b> → "evaluation isn't configured" with setup steps, not a 500.</li>
+            <li><b>Response would disclose its case</b> → withheld marker; the verdict still stands.</li>
+            <li><b>Two identical runs disagree</b> → both kept, disagreement shown, judge-based verdicts labelled as the variable part.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>What was simplified, and why</h3>
+          <ul style="margin:0;padding-left:18px;font-size:14px">
+            <li><code>sessionStorage</code> instead of a database and accounts — the loop and the export are the product.</li>
+            <li>One judged criterion in the flagship, not a judge per case — credibility and cost.</li>
+            <li>Pack content in code, not a CMS — three packs don't need authoring.</li>
+            <li>A versioned wrapper instead of a prompt-templating DSL.</li>
+            <li>Concurrency 3 instead of all six at once — keeps the free tier's tokens-per-minute comfortable.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The five refinements, as built</h2>
+    <div class="card">
+      <div class="grid2">
+        <div>
+          <h3>1 · Public vs private fixtures</h3>
+          <p style="font-size:14px">Public metadata (objective, criteria, difficulty) ships in the repo. Fixtures — inputs and acceptable answers — come from <code>PACK_FIXTURES_JSON</code> at deploy time and are parsed with Zod at boot. Sample sets are committed, labelled in the UI.</p>
+        </div>
+        <div>
+          <h3>2 · Fair evaluation</h3>
+          <p style="font-size:14px">No JSON mode on the model under test — the constraint belongs in the user's prompt. Structured output only for the judge. Per-criterion pass/fail rules are written down, including the fabrication allowlist.</p>
+        </div>
+      </div>
+      <div class="grid2" style="margin-top:16px">
+        <div>
+          <h3>3 · Comparable attempts only</h3>
+          <p style="font-size:14px">A delta requires matching model IDs, <code>settingsHash</code>, <code>evaluationVersion</code>, <code>fixtureSetId</code> and scored count. Otherwise: “not directly comparable”, with the reason. Inference is typed separately from observation.</p>
+        </div>
+        <div>
+          <h3>4 · Proportional redaction</h3>
+          <p style="font-size:14px">Withhold on a real disclosure — a distinctive span of the input, or an acceptable answer the user couldn't have derived. A correct response stays visible. Residual risk documented.</p>
+        </div>
+      </div>
+      <div class="warn" style="margin-top:16px"><b>5 · Server-side protection:</b> prompt bounds 40–4,000 characters · body cap 16 KB · 20 s per call, 45 s per run · 3 cases in flight · 6 runs/min and 40/hour per IP · shared daily budget of 900 model calls (~128 runs). Counters live in Upstash Redis when configured, else in memory — and the README says which guarantee is actually in force.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Still needing your yes</h2>
+    <div class="card">
+      <ul style="margin:0;padding-left:18px;font-size:14px">
+        <li><b>Provider — Groq recommended.</b> Best free daily allowance I found (~1,000 requests/day vs ~50 on OpenRouter unfunded) and lowest latency. Tradeoff: tight tokens-per-minute, so short inputs and capped concurrency. <span class="tag rec">AWAITING CONFIRMATION</span></li>
+        <li><b>Deploy target — Vercel recommended.</b> Same-origin Next.js deployment, env vars in a dashboard. <span class="tag rec">AWAITING CONFIRMATION</span></li>
+        <li><b>Stack — Next.js + TypeScript + Tailwind + Zod.</b> A server route is required either way; this gets it with one file. <span class="tag rec">AWAITING CONFIRMATION</span></li>
+      </ul>
+      <div class="warn"><b>Settled:</b> Next.js + TypeScript + Tailwind + Zod · Groq · Vercel · sessionStorage. <b>Still open:</b> exact model IDs, judge JSON-mode support, latency and real free-tier limits — measured by <code>scripts/probe-provider.ts</code> before any ID is committed. Nothing here assumes a lookup happened.</div>
+    </div>
+  </section>
+
+  <footer>Visual companion to <a href="spec.md">spec.md</a>, which stays canonical. Next: <b>5-build</b> — ordered working steps, verified one at a time.</footer>
+</div>
+
+<script>
+  (function () {
+    var tabs = [].slice.call(document.querySelectorAll('[role="tab"]'));
+    var panels = tabs.map(function (t) { return document.getElementById(t.getAttribute('aria-controls')); });
+    function select(i) {
+      tabs.forEach(function (t, j) {
+        var on = i === j;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+        panels[j].hidden = !on;
+      });
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { select(i); });
+      t.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault();
+        var n = e.key === 'ArrowRight' ? (i + 1) % tabs.length : (i - 1 + tabs.length) % tabs.length;
+        select(n); tabs[n].focus();
+      });
+    });
+    select(0);
+  })();
+</script>
+</body>
+</html>

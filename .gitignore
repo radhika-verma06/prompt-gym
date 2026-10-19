@@ -1,0 +1,30 @@
+# Personal learning context — kept local by default.
+/devpost/learner-profile.md
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies and build output
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+
+# Test artifacts
+test-results/
+playwright-report/
+
+# OS
+.DS_Store
+
+# Devpost Learn skill pack — tooling, not app source
+/.agents/
+/.claude/
+/agent/
+
+# Private production fixtures and local production env
+/.fixtures/
+.vercel
+.env*

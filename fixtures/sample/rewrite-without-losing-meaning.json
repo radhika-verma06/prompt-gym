@@ -1,0 +1,108 @@
+{
+  "packId": "rewrite-without-losing-meaning",
+  "id": "rw-sample-v1",
+  "evaluationVersion": "eval-2",
+  "cases": [
+    {
+      "id": "case-1",
+      "name": "Shipping notice with a condition",
+      "criterionIds": ["W1", "W2", "W3"],
+      "input": "Your parcel is scheduled to arrive on Thursday 14 March, but please note that delivery to the third floor is only available if someone is present to open the main door, and otherwise the courier will leave a card and attempt redelivery the following working day.",
+      "acceptable": {
+        "maxWords": 45,
+        "requiredFacts": ["Thursday 14 March", "third floor", "card", "redelivery"]
+      },
+      "redaction": "whole-input-only",
+      "checks": [
+        { "tier": "A", "kind": "word-limit" },
+        { "tier": "A", "kind": "fact-retention" },
+        { "tier": "A", "kind": "no-new-values" },
+        { "tier": "A", "kind": "single-paragraph" },
+        { "tier": "B", "kind": "tone-judge" }
+      ]
+    },
+    {
+      "id": "case-2",
+      "name": "Refund denial that must stay a denial",
+      "criterionIds": ["W1", "W2", "W4"],
+      "input": "We are unable to offer a refund for this item because it was purchased more than 60 days ago, and the returns window closed on 2 February.",
+      "acceptable": {
+        "maxWords": 45,
+        "requiredFacts": ["60 days", "2 February"],
+        "negationMarkers": ["unable", "cannot", "can't", "not eligible", "no longer", "closed"]
+      },
+      "redaction": "whole-input-only",
+      "checks": [
+        { "tier": "A", "kind": "word-limit" },
+        { "tier": "A", "kind": "fact-retention" },
+        { "tier": "A", "kind": "negation-preserved" },
+        { "tier": "B", "kind": "tone-judge" }
+      ]
+    },
+    {
+      "id": "case-3",
+      "name": "Instructional text with safety limits",
+      "criterionIds": ["W1", "W2", "W4"],
+      "input": "Before using the device for the first time, charge it for at least four hours, then hold the power button for three seconds until the indicator turns green. Do not use the device while it is charging, and keep it away from water at all times.",
+      "acceptable": {
+        "maxWords": 45,
+        "requiredFacts": ["four hours", "three seconds", "green", "water"],
+        "negationMarkers": ["do not", "don't", "never", "avoid"]
+      },
+      "redaction": "whole-input-only",
+      "checks": [
+        { "tier": "A", "kind": "word-limit" },
+        { "tier": "A", "kind": "fact-retention" },
+        { "tier": "A", "kind": "negation-preserved" }
+      ]
+    },
+    {
+      "id": "case-4",
+      "name": "Two deadlines that must both survive",
+      "criterionIds": ["W1", "W2", "W4"],
+      "input": "Applications open on 1 May and close at 5pm on 30 June. Late applications will not be considered, and applicants who have not received a confirmation email by 7 July should contact the admissions office on 020 7946 0018.",
+      "acceptable": {
+        "maxWords": 45,
+        "requiredFacts": ["1 May", "30 June", "7 July", "020 7946 0018"],
+        "negationMarkers": ["not", "no late", "won't"]
+      },
+      "redaction": "whole-input-only",
+      "checks": [
+        { "tier": "A", "kind": "word-limit" },
+        { "tier": "A", "kind": "fact-retention" },
+        { "tier": "A", "kind": "negation-preserved" },
+        { "tier": "B", "kind": "tone-judge" }
+      ]
+    },
+    {
+      "id": "case-5",
+      "name": "Dense paragraph with figures",
+      "criterionIds": ["W1", "W2", "W3", "W5"],
+      "input": "The subscription costs £12.99 per month, rising to £15.99 after the first 12 months. Cancellation is free at any time, but if you cancel within the first 14 days you will be charged for the days used. Annual billing saves £24 compared with monthly billing.",
+      "acceptable": {
+        "maxWords": 45,
+        "requiredFacts": ["£12.99", "£15.99", "12 months", "14 days", "£24"]
+      },
+      "redaction": "whole-input-only",
+      "checks": [
+        { "tier": "A", "kind": "word-limit" },
+        { "tier": "A", "kind": "fact-retention" },
+        { "tier": "A", "kind": "no-new-values" },
+        { "tier": "A", "kind": "single-paragraph" }
+      ]
+    },
+    {
+      "id": "case-6",
+      "name": "Formal tone that must stay formal",
+      "criterionIds": ["W1", "W5", "W6"],
+      "input": "The committee has resolved that the proposed amendment to the parking regulations shall be deferred until the next quarterly meeting, pending clarification of the enforcement arrangements currently under review by the legal department.",
+      "acceptable": { "maxWords": 45 },
+      "redaction": "whole-input-only",
+      "checks": [
+        { "tier": "A", "kind": "word-limit" },
+        { "tier": "A", "kind": "single-paragraph" },
+        { "tier": "B", "kind": "tone-judge" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --canvas: #f6f0e4;
+  --paper: #fffdf8;
+  --ink: #17233f;
+  --subtle: #5a6072;
+  --navy: #23396b;
+  --navy-deep: #16264a;
+  --orange: #f49b42;
+  --mint: #56c3a4;
+  --coral: #ef6f62;
+  --line: #e4dccb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--canvas);
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: "Nunito Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+/* One visible focus treatment everywhere, never removed. */
+:focus-visible {
+  outline: 3px solid var(--navy);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: #ffdcae;
+  color: var(--ink);
+}
+
+.display {
+  font-family: "Bricolage Grotesque", "Nunito Sans", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+}
+
+.metric {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Faint paper tooth so large warm areas don't read as flat gradient fills. */
+.grain {
+  position: relative;
+  isolation: isolate;
+}
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: multiply;
+  border-radius: inherit;
+}
+
+.paper-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 20px 40px -34px rgba(23, 35, 63, 0.5);
+}
+
+.hairline {
+  border-color: var(--line);
+}
+
+/* The score ring animates by transitioning stroke-dashoffset, so it re-settles
+   whenever a new attempt lands instead of replaying from zero on every render. */
+.score-ring {
+  transition: stroke-dashoffset 900ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.underline-stroke {
+  stroke-dasharray: 320;
+  stroke-dashoffset: 0;
+  animation: draw-stroke 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both 0.2s;
+}
+
+@keyframes draw-stroke {
+  from {
+    stroke-dashoffset: 320;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.tile-flip {
+  animation: tile-in 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transform-origin: center bottom;
+}
+
+@keyframes tile-in {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) rotateX(-18deg) scale(0.96);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0) scale(1);
+  }
+}
+
+.spotlight {
+  background: radial-gradient(
+    220px circle at var(--spot-x, 50%) var(--spot-y, 0%),
+    rgba(244, 155, 66, 0.18),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+.group:hover .spotlight,
+.group:focus-within .spotlight {
+  opacity: 1;
+}
+
+.prompt-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #d9cfbc transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

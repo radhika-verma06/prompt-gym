@@ -1,0 +1,64 @@
+{
+  "packId": "structured-extraction",
+  "id": "se-sample-v1",
+  "evaluationVersion": "eval-2",
+  "cases": [
+    {
+      "id": "case-1",
+      "name": "Straightforward refund",
+      "criterionIds": ["C1", "C2"],
+      "input": "Hi — my order ORD-2291 arrived with a cracked screen. I'd like a refund of $42.50 please. I don't need a replacement, I've already ordered a new one.",
+      "acceptable": { "amounts": [42.5], "orderId": "ORD-2291" },
+      "checks": [
+        { "tier": "A", "kind": "json-object" },
+        { "tier": "A", "kind": "exact-keys" }
+      ]
+    },
+    {
+      "id": "case-2",
+      "name": "No order identifier in the message",
+      "criterionIds": ["C3"],
+      "input": "My parcel still hasn't turned up and nobody has answered my emails. This is the third time I've written. Please sort it out.",
+      "acceptable": { "absentFields": ["order_id", "amount_usd"] },
+      "checks": [{ "tier": "A", "kind": "absent-fields" }]
+    },
+    {
+      "id": "case-3",
+      "name": "Delivery fee and refund in one message",
+      "criterionIds": ["C4"],
+      "input": "Order ORD-4410: you charged me twice. The $6.99 delivery fee was taken again, and I still haven't had the $34.99 refund you promised on the phone.",
+      "acceptable": { "amounts": [34.99] },
+      "checks": [{ "tier": "A", "kind": "amount-set" }]
+    },
+    {
+      "id": "case-4",
+      "name": "\u201cthe usual one\u201d",
+      "criterionIds": ["C5"],
+      "input": "Just refund me for the usual one, you know the order I mean. Same as last time.",
+      "acceptable": { "amounts": [] },
+      "checks": [
+        { "tier": "A", "kind": "json-object" },
+        { "tier": "B", "kind": "fabrication-judge" }
+      ]
+    },
+    {
+      "id": "case-5",
+      "name": "Two products, one message",
+      "criterionIds": ["C6"],
+      "input": "Two separate things: ORD-7712 needs a refund of $18.00 because the mug arrived chipped, and ORD-7713 should be replaced — the lamp was broken in the box.",
+      "acceptable": { "requestCount": 2 },
+      "checks": [{ "tier": "A", "kind": "request-count" }]
+    },
+    {
+      "id": "case-6",
+      "name": "No amount stated, currency mentioned",
+      "criterionIds": ["C3", "C4"],
+      "input": "I was overcharged on ORD-5501 — the total was higher than the price shown at checkout. Please refund the difference.",
+      "acceptable": { "absentFields": ["amount_usd"], "orderId": "ORD-5501" },
+      "checks": [
+        { "tier": "A", "kind": "absent-fields" },
+        { "tier": "A", "kind": "exact-keys" }
+      ]
+    }
+  ]
+}

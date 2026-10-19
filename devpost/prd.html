@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Gym — PRD companion</title>
+<style>
+  :root{
+    --bg:#F7F4EB; --card:#fff; --navy:#21396A; --orange:#F8AB51; --green:#64BFA4; --coral:#E87474;
+    --ink:#252936; --soft:#5B6172; --line:#E7E2D6; --navy-soft:#EAEEF6;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:"Nunito Sans",-apple-system,"Segoe UI",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.6 var(--sans)}
+  .wrap{max-width:1060px;margin:0 auto;padding:54px 28px 88px}
+  .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--orange)}
+  h1{font-size:40px;line-height:1.06;letter-spacing:-.025em;margin:12px 0 10px;font-weight:800}
+  h2{font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin:0 0 16px}
+  h3{margin:0 0 6px;font-size:16px}
+  p{margin:0 0 11px;color:#31364A}
+  .lede{font-size:18px;color:#3B4157;max-width:64ch}
+  .badge{display:inline-flex;align-items:center;gap:7px;background:var(--navy-soft);color:var(--navy);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:800}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--navy)}
+  .meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--soft)}
+  .meta b{color:var(--ink)}
+  section{margin-top:44px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 26px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:840px){.grid2{grid-template-columns:1fr}}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:24px;flex-wrap:wrap}
+  .tabs button{appearance:none;background:none;border:0;border-bottom:2px solid transparent;padding:10px 13px;
+    font:800 12.5px var(--sans);letter-spacing:.03em;color:var(--soft);cursor:pointer;border-radius:6px 6px 0 0}
+  .tabs button:hover{background:#F0EDE3;color:var(--ink)}
+  .tabs button[aria-selected="true"]{color:var(--navy);border-bottom-color:var(--orange)}
+  .panel[hidden]{display:none}
+  svg{display:block;width:100%;height:auto}
+  /* before → after */
+  .shift{display:grid;grid-template-columns:1fr 26px 1fr;gap:10px;align-items:center;padding:11px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .shift:last-child{border-bottom:0}
+  .shift .a{color:var(--soft)} .shift .a b{color:var(--ink)}
+  .shift .arw{text-align:center;color:var(--orange);font-weight:800}
+  .shift .b b{color:var(--navy)}
+  details{border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:10px;overflow:hidden}
+  summary{cursor:pointer;padding:14px 18px;font-weight:800;font-size:14px;display:flex;justify-content:space-between;gap:12px;align-items:center;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary .k{font:700 11px var(--mono);color:var(--soft)}
+  .body{padding:0 18px 16px;font-size:14px;color:#31364A}
+  .body ul{margin:0;padding-left:18px}.body li{margin-bottom:6px}
+  .state{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 11px;font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+  .state.pass{background:#E8F5F1;color:#1E6B57}
+  .state.fail{background:#FCECEC;color:#9B3B3B}
+  .state.reg{background:#fff;border:1.5px solid var(--coral);color:#9B3B3B}
+  .state.unk{background:var(--navy-soft);color:var(--navy)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .note{background:var(--navy-soft);border-left:3px solid var(--navy);border-radius:0 8px 8px 0;padding:11px 15px;font-size:13.5px;color:#2A3A5C}
+  .warn{background:#FCECEC;border-left:3px solid var(--coral);border-radius:0 8px 8px 0;padding:11px 15px;font-size:13.5px;color:#5F2A2A}
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+  th{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+  footer{margin-top:52px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--soft)}
+  a{color:var(--navy)}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Devpost Learn · Planning doc 3 of 3 · visual companion</div>
+  <h1>Prompt Gym — Product Requirements</h1>
+  <p class="lede">The scope sketch, filled in: two screens, one loop, and the four states a test case can land in.</p>
+  <span class="badge"><span class="dot"></span>Draft — awaiting your review</span>
+
+  <div class="meta">
+    <span><b>Canonical</b> <a href="prd.md">prd.md</a></span>
+    <span><b>Scope</b> <a href="scope.html">scope.html</a></span>
+    <span><b>Design preview</b> <a href="design-preview.html">design-preview.html</a></span>
+    <span><b>Packs</b> 3 · 6 cases each</span>
+  </div>
+
+  <section>
+    <h2>The expansion, made visible</h2>
+    <div class="card">
+      <div class="shift"><div class="a">Scope said <b>“three challenge packs”</b></div><div class="arw">→</div><div class="b">Each pack now carries an <b>objective, six numbered criteria, a difficulty and an example prompt</b> — and Structured Extraction is the <b>flagship</b>.</div></div>
+      <div class="shift"><div class="a">Scope said <b>“actionable feedback”</b></div><div class="arw">→</div><div class="b">A fixed card order: <b>status → criterion violated → observed behaviour → hint → raw response</b>. Passing cases explain what worked.</div></div>
+      <div class="shift"><div class="a">Scope said <b>“regression detection”</b></div><div class="arw">→</div><div class="b">A named feature with its own treatment: <b>which case flipped, what the edit changed, why generality was lost</b> — educational, not scolding.</div></div>
+      <div class="shift"><div class="a">Scope said <b>“score history”</b></div><div class="arw">→</div><div class="b"><b>Score, delta, progress chart, best attempt, per-attempt improved/regressed summary</b> and a lesson statement — all in the right panel.</div></div>
+      <div class="shift"><div class="a">Scope said <b>“export”</b></div><div class="arw">→</div><div class="b"><b>Markdown by default, JSON available</b>, containing prompt, results, history and lesson — and never a hidden input.</div></div>
+    </div>
+    <div class="warn">The demo trajectory <b>3/6 → 5/6 → 4/6 → 6/6</b> stays illustrative. Nothing in the scoring path may be tuned to reproduce it.</div>
+  </section>
+
+  <section>
+    <h2>The workspace, one loop</h2>
+    <div class="tabs" role="tablist" aria-label="PRD views">
+      <button role="tab" id="t-a" aria-controls="p-a" aria-selected="true">Interaction</button>
+      <button role="tab" id="t-b" aria-controls="p-b" aria-selected="false">Behaviours</button>
+      <button role="tab" id="t-c" aria-controls="p-c" aria-selected="false">States</button>
+      <button role="tab" id="t-d" aria-controls="p-d" aria-selected="false">Boundary</button>
+      <button role="tab" id="t-e" aria-controls="p-e" aria-selected="false">Scoring</button>
+    </div>
+
+    <div class="panel" id="p-a" role="tabpanel" aria-labelledby="t-a">
+      <div class="card">
+        <svg viewBox="0 0 900 330" role="img" aria-label="Diagram: land, choose pack, orient, write prompt, run six real cases, four possible case states, revise, and the regression branch that compares attempts">
+          <defs>
+            <marker id="a1" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#9AA0AE"/></marker>
+            <marker id="a2" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto"><path d="M0,0 L7,3.2 L0,6.4 z" fill="#E87474"/></marker>
+          </defs>
+          <g font-family="Nunito Sans, system-ui, sans-serif" font-size="12.5">
+            <rect x="12" y="24" width="140" height="58" rx="10" fill="#fff" stroke="#E7E2D6"/>
+            <text x="82" y="48" text-anchor="middle" font-weight="800">Land</text>
+            <text x="82" y="66" text-anchor="middle" fill="#5B6172" font-size="11">10-second clarity</text>
+
+            <rect x="176" y="24" width="140" height="58" rx="10" fill="#fff" stroke="#E7E2D6"/>
+            <text x="246" y="48" text-anchor="middle" font-weight="800">Choose a pack</text>
+            <text x="246" y="66" text-anchor="middle" fill="#5B6172" font-size="11">flagship marked</text>
+
+            <rect x="340" y="24" width="150" height="58" rx="10" fill="#fff" stroke="#E7E2D6"/>
+            <text x="415" y="48" text-anchor="middle" font-weight="800">Orient</text>
+            <text x="415" y="66" text-anchor="middle" fill="#5B6172" font-size="11">objective · criteria · example</text>
+
+            <rect x="514" y="24" width="150" height="58" rx="10" fill="#fff" stroke="#E7E2D6"/>
+            <text x="589" y="48" text-anchor="middle" font-weight="800">Write a prompt</text>
+            <text x="589" y="66" text-anchor="middle" fill="#5B6172" font-size="11">writing surface, not an IDE</text>
+
+            <rect x="688" y="24" width="200" height="58" rx="10" fill="#21396A" stroke="#21396A"/>
+            <text x="788" y="48" text-anchor="middle" font-weight="800" fill="#fff">Run Tests</text>
+            <text x="788" y="66" text-anchor="middle" fill="#C7D2E8" font-size="11">6 real cases · fixed settings</text>
+
+            <rect x="688" y="150" width="200" height="66" rx="10" fill="#fff" stroke="#CFD6E4"/>
+            <text x="788" y="174" text-anchor="middle" font-weight="800">Cases resolve one by one</text>
+            <text x="788" y="192" text-anchor="middle" fill="#5B6172" font-size="11">progressive, never a fake</text>
+            <text x="788" y="206" text-anchor="middle" fill="#5B6172" font-size="11">provisional score</text>
+
+            <rect x="352" y="150" width="316" height="66" rx="10" fill="#fff" stroke="#E7E2D6"/>
+            <text x="510" y="172" text-anchor="middle" font-weight="800">One of four states per case</text>
+            <text x="510" y="190" text-anchor="middle" fill="#1E6B57" font-size="11.5">Passed</text>
+            <text x="510" y="205" text-anchor="middle" fill="#9B3B3B" font-size="11.5">Failed · Regressed · Uncertain</text>
+
+            <rect x="352" y="252" width="316" height="60" rx="10" fill="#FCECEC" stroke="#E87474"/>
+            <text x="510" y="274" text-anchor="middle" font-weight="800" fill="#9B3B3B">Regression branch — the memorable beat</text>
+            <text x="510" y="292" text-anchor="middle" fill="#6B3232" font-size="11">previously passing case fails → compare attempts → why it overfits</text>
+
+            <rect x="40" y="150" width="280" height="66" rx="10" fill="#fff" stroke="#E7E2D6"/>
+            <text x="180" y="174" text-anchor="middle" font-weight="800">Revise and rerun</text>
+            <text x="180" y="192" text-anchor="middle" fill="#5B6172" font-size="11">attempt preserved · score, delta, chart,</text>
+            <text x="180" y="206" text-anchor="middle" fill="#5B6172" font-size="11">best attempt, lesson statement</text>
+
+            <rect x="40" y="252" width="280" height="60" rx="10" fill="#fff" stroke="#E7E2D6"/>
+            <text x="180" y="274" text-anchor="middle" font-weight="800">Export</text>
+            <text x="180" y="292" text-anchor="middle" fill="#5B6172" font-size="11">prompt · results · history · lesson — no hidden inputs</text>
+
+            <path d="M152 53 H172" stroke="#9AA0AE" stroke-width="1.5" marker-end="url(#a1)"/>
+            <path d="M316 53 H336" stroke="#9AA0AE" stroke-width="1.5" marker-end="url(#a1)"/>
+            <path d="M490 53 H510" stroke="#9AA0AE" stroke-width="1.5" marker-end="url(#a1)"/>
+            <path d="M664 53 H684" stroke="#9AA0AE" stroke-width="1.5" marker-end="url(#a1)"/>
+            <path d="M788 82 V146" stroke="#9AA0AE" stroke-width="1.5" marker-end="url(#a1)"/>
+            <path d="M688 183 H672" stroke="#9AA0AE" stroke-width="1.5" marker-end="url(#a1)"/>
+            <path d="M352 183 H324" stroke="#9AA0AE" stroke-width="1.5" marker-end="url(#a1)"/>
+            <path d="M510 216 V248" stroke="#E87474" stroke-width="1.5" marker-end="url(#a2)"/>
+            <path d="M352 282 H324" stroke="#9AA0AE" stroke-width="1.5" marker-end="url(#a1)"/>
+            <path d="M180 252 V220" stroke="#9AA0AE" stroke-width="1.5" marker-end="url(#a1)"/>
+            <path d="M320 183 C340 120 430 112 500 84" stroke="#9AA0AE" stroke-width="1.5" fill="none" stroke-dasharray="4 3" marker-end="url(#a1)"/>
+            <text x="352" y="112" fill="#5B6172" font-size="11">next attempt</text>
+          </g>
+        </svg>
+      </div>
+      <div class="note">Left panel <b>42%</b> — objective, criteria, editor, Run Tests. Right panel <b>58%</b> — case cards, feedback, score, history. Score never lives on another page.</div>
+    </div>
+
+    <div class="panel" id="p-b" role="tabpanel" aria-labelledby="t-b" hidden>
+      <details open>
+        <summary>Arrival and orientation <span class="k">10 seconds</span></summary>
+        <div class="body"><ul>
+          <li>Headline, one paragraph, three cards showing objective / difficulty / skill.</li>
+          <li>Flagship card marked “start here”.</li>
+          <li>Workspace shows objective, criteria and an example prompt before the first run.</li>
+          <li>No sign-in, no onboarding carousel.</li>
+        </ul></div>
+      </details>
+      <details>
+        <summary>The editor and Run Tests <span class="k">writing surface</span></summary>
+        <div class="body"><ul>
+          <li>Run Tests disabled until there's non-whitespace text, and it says why.</li>
+          <li>Running state; cannot be double-triggered.</li>
+          <li>Rerun keeps the previous attempt in history and keeps the current prompt in the editor.</li>
+          <li>The example prompt is collapsed by default so it can't be copied instead of understood.</li>
+          <li>No line-number gutter, no syntax highlighting — comfortable writing, not an IDE.</li>
+        </ul></div>
+      </details>
+      <details>
+        <summary>Test execution <span class="k">6 cases, really run</span></summary>
+        <div class="body"><ul>
+          <li>All six cases hit the real model; nothing pre-determined, cached or fabricated.</li>
+          <li>Results land progressively, case by case.</li>
+          <li>Identical model and settings across attempts in a session.</li>
+          <li>Deterministic checks where the criterion allows (JSON validity, schema shape, forbidden content, numeric preservation).</li>
+          <li>A constrained judge only where no deterministic check exists, with its criterion stated on the case.</li>
+        </ul></div>
+      </details>
+      <details>
+        <summary>A case card <span class="k">failed · passed</span></summary>
+        <div class="body">
+          <p><b>Failed:</b> status → criterion violated → observed behaviour in one plain sentence → constructive hint naming the behaviour to define → expandable raw model response.</p>
+          <p style="margin:0"><b>Passed:</b> status → what worked, briefly → same expandable raw response.</p>
+          <div class="note" style="margin-top:10px">The hint never supplies a copy-ready instruction. The raw response is visible; the hidden input is not.</div>
+        </div>
+      </details>
+      <details>
+        <summary>Regression detection <span class="k">observed vs inferred</span></summary>
+        <div class="body">
+          <p style="color:#1E6B57"><b>Observed — always shown:</b> the case that flipped, both verdicts with their attempt numbers, the difference in what the model actually did, and the prompt text that changed.</p>
+          <p style="color:#9B3B3B;margin:0"><b>Inferred — labelled as inference:</b> a possible explanation (added specificity, a narrower rule), offered only when the evidence supports it and phrased as a hypothesis. The app <b>never asserts that overfitting caused the failure</b> — with one run per attempt, causation isn't established.</p>
+          <div class="warn" style="margin-top:12px">When the evidence is thin, only the observation is shown and no cause is proposed at all.</div>
+        </div>
+      </details>
+      <details>
+        <summary>Scan, focus and attempt diff <span class="k">experience</span></summary>
+        <div class="body"><ul>
+          <li>Compact row per case — state chip, name, criterion, one-line verdict; six rows fit one screen.</li>
+          <li>Rows expand in place; keyboard operable; Escape collapses.</li>
+          <li><b>Focus mode</b> for a single failure, with score and prompt still visible.</li>
+          <li><b>Changes since attempt N</b> names what the edit changed and every case that flipped.</li>
+        </ul></div>
+      </details>
+      <details>
+        <summary>Score, history, lesson and export <span class="k">motivation</span></summary>
+        <div class="body"><ul>
+          <li>Score out of six plus the delta from the previous attempt.</li>
+          <li>Progress chart across the session; best attempt marked.</li>
+          <li>Per-attempt improved / regressed summary.</li>
+          <li>Lesson statement derived from criteria actually met, not a canned line.</li>
+          <li>Export: Markdown by default, JSON available — includes a timestamp and the note that results came from real evaluations.</li>
+        </ul></div>
+      </details>
+    </div>
+
+    <div class="panel" id="p-c" role="tabpanel" aria-labelledby="t-c" hidden>
+      <div class="card">
+        <div class="row" style="margin-bottom:16px">
+          <span class="state pass">✓ Passed</span>
+          <span class="state fail">✕ Failed</span>
+          <span class="state reg">⚠ Regressed</span>
+          <span class="state unk">! Uncertain</span>
+        </div>
+        <table>
+          <tr><th>State</th><th>What it means</th><th>Counts toward the score?</th></tr>
+          <tr><td>Passed</td><td>The criterion was met on a real run</td><td>Yes</td></tr>
+          <tr><td>Failed</td><td>The criterion was violated; the card names which and how</td><td>No</td></tr>
+          <tr><td>Regressed</td><td>Passed on an earlier attempt, fails now — shown with the comparison</td><td>No</td></tr>
+          <tr><td>Uncertain</td><td>The evaluation genuinely couldn't decide; the reason is stated in place</td><td><b>Never</b> — not a pass, not a failure</td></tr>
+        </table>
+        <div class="note" style="margin-top:16px">Also specified: first use, run in progress, completed run, model error (run-level, retryable, never a failed case, prompt preserved), empty history and session-only persistence.</div>
+        <p style="margin-top:16px"><b>Responsive:</b> desktop is the target; narrow viewports stack with the score pinned above the case list, full-width rows, inline expansion, body text ≥16px, tap targets ≥44px, and no horizontal scrolling at 360px.</p>
+        <p style="margin:0"><b>Accessibility:</b> full keyboard operation with visible focus and a logical tab order; states differentiated by label, icon <i>and</i> border treatment, never colour alone; contrast ≥4.5:1; <span style="font-family:var(--mono);font-size:12.5px">prefers-reduced-motion</span> honoured; progress and each resolved case announced through a polite live region.</p>
+      </div>
+    </div>
+
+    <div class="panel" id="p-d" role="tabpanel" aria-labelledby="t-d" hidden>
+      <div class="grid2">
+        <div class="card">
+          <h3>Building now</h3>
+          <ul style="margin:0;padding-left:18px;font-size:14px">
+            <li>Landing with three packs; flagship fully realised, two simpler but polished</li>
+            <li>Six genuinely evaluated cases per pack, built on fair edge conditions</li>
+            <li>Split workspace, progressive results, four states, actionable feedback</li>
+            <li>Regression detection separating observed from inferred</li>
+            <li>Score, delta, chart, best attempt, lesson</li>
+            <li>Markdown + JSON export</li>
+            <li><b>A usable public deployment</b> — key held server-side, per-session run cap</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Not now</h3>
+          <ul style="margin:0;padding-left:18px;font-size:14px">
+            <li>Adaptive hint coach — the static hint ships instead</li>
+            <li>More packs, difficulty tiers, cross-pack mastery</li>
+            <li>Accounts, saved history across sessions, shareable challenge links</li>
+          </ul>
+          <div class="note" style="margin-top:12px">Deployment is no longer deferred: presentation and a working product rank equally, so both are scheduled.</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h3>Non-goals</h3>
+        <p style="margin:0">Not a chatbot, playground or prompt IDE · no prose-based prompt-engineering lessons · no arguable scoring · no multiplayer, leaderboards or social features · no server-side storage of prompts, no accounts, no database.</p>
+      </div>
+    </div>
+
+    <div class="panel" id="p-e" role="tabpanel" aria-labelledby="t-e" hidden>
+      <div class="grid2">
+        <div class="card">
+          <h3>Two validator tiers, nothing else</h3>
+          <p><b>Tier A — deterministic.</b> JSON parses; schema and field types; required fields; no output value that appears nowhere in the input (fabrication check); amounts in an acceptable set; request counts.</p>
+          <p style="margin:0"><b>Tier B — constrained judgement.</b> Only where a criterion is genuinely interpretive. The judge sees the criterion, the input and the response — never the user's prompt — and returns <span style="font-family:var(--mono);font-size:12.5px">pass | fail | uncertain</span> against a fixed rubric, at the same fixed settings as the model under test.</p>
+        </div>
+        <div class="card">
+          <h3>Score arithmetic</h3>
+          <ul style="margin:0;padding-left:18px;font-size:14px">
+            <li>A case is <b>scored</b>, <b>unscored</b> (uncertain) or <b>unresolved</b> (API errored).</li>
+            <li>Headline reads <span style="font-family:var(--mono);font-size:13px">4 of 5 scored · 1 uncertain · 0 errors</span>.</li>
+            <li>Uncertain and errored cases leave the denominator. <b>A technical error can never lower the score.</b></li>
+            <li>Delta only compares attempts with matching scored counts — otherwise it says <i>not directly comparable</i>.</li>
+            <li>Best attempt is the highest <span style="font-family:var(--mono);font-size:13px">passed / scored</span>, shown with its scored count.</li>
+          </ul>
+        </div>
+      </div>
+      <details open style="margin-top:16px">
+        <summary>Keeping the hidden tests hidden <span class="k">leak channels</span></summary>
+        <div class="body">
+          <p style="margin-top:0">The raw model response is shown because it is the evidence — which makes it the most likely leak channel.</p>
+          <ul style="margin:0">
+            <li>Responses are length-capped and rendered as inert text.</li>
+            <li>Every case gets an <b>echo-risk review</b>: if a response would reproduce the input or disclose an acceptable answer, it is redacted with <i>“response withheld to protect this case”</i> plus the behavioural description.</li>
+            <li>Expected values never appear in feedback, hints, diffs, tooltips or the export — feedback describes behaviour, not the answer.</li>
+            <li>Attempt comparison shows changes to the <b>user's prompt</b>, never hidden inputs.</li>
+            <li>Case rows, URLs, HTML attributes and page source carry no hidden input text.</li>
+          </ul>
+        </div>
+      </details>
+      <div class="note">Transparency in the product itself: every case shows which validator decided it, and the export records the model, the fixed settings, the timestamp and the known limits — a judge can be inconsistent, a provider can vary between identical runs, and uncertainty is reported rather than quietly resolved.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Blocking the spec</h2>
+    <div class="card">
+      <ul style="margin:0;padding-left:18px;font-size:14px">
+        <li><b>Which model API, whose key</b> — latency, cost and reproducibility all follow from it. Blocks `4-spec`.</li>
+        <li><b>Judge calibration</b> — which Tier B verdicts are stable enough to ship, and when a judge must return <i>uncertain</i> instead of guessing.</li>
+        <li><b>Where it deploys, how the key is held</b> — server-side route required; host and per-session run cap are `4-spec` decisions.</li>
+        <li>Export delivery: clipboard, download, or both — can wait.</li>
+        <li>Whether a real, unassisted regression appears with these six cases — verified by running the demo prompts for real during build. Never engineered.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Visual companion to <a href="prd.md">prd.md</a>, which stays canonical. Next: <b>4-spec</b> — how it's built. Then build, test, polish.</footer>
+</div>
+
+<script>
+  (function () {
+    var tabs = [].slice.call(document.querySelectorAll('[role="tab"]'));
+    var panels = tabs.map(function (t) { return document.getElementById(t.getAttribute('aria-controls')); });
+    function select(i) {
+      tabs.forEach(function (t, j) {
+        var on = i === j;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+        panels[j].hidden = !on;
+      });
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { select(i); });
+      t.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault();
+        var n = e.key === 'ArrowRight' ? (i + 1) % tabs.length : (i - 1 + tabs.length) % tabs.length;
+        select(n); tabs[n].focus();
+      });
+    });
+    select(0);
+  })();
+</script>
+</body>
+</html>
