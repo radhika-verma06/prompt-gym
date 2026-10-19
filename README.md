@@ -4,6 +4,10 @@ Write a prompt, run it against six hidden cases, and see exactly which behaviour
 
 Three packs: **Structured Extraction** (flagship), **Following Rules**, **Rewrite Without Losing Meaning**.
 
+## Project documents
+
+The planning trail generated during the build is in `devpost/`: [`scope.md`](devpost/scope.md), [`prd.md`](devpost/prd.md) and [`spec.md`](devpost/spec.md), plus the design notes, demo script and submission checklist.
+
 ---
 
 ## Run it
