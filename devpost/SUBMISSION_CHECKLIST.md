@@ -4,6 +4,7 @@ Last updated: 2026-10-19.
 
 ## Live and verified
 
+- [x] **Public repository:** https://github.com/radhika-verma06/prompt-gym (public, first commit pushed 2026-10-19, MIT licence detected by GitHub). `.env.*`, `.fixtures/`, the learner profile and the skill pack are untracked.
 - [x] **Public deployment:** https://prompt-gym-three.vercel.app (Vercel production, Deployment Protection disabled). Redeployed 2026-10-19 with provider-limit handling.
 - [x] **Real model evaluation:** `openai/gpt-oss-20b` under test, `openai/gpt-oss-120b` judge, `temperature: 0`, `reasoning_effort: low`, 1200/800 output tokens.
 - [x] **Private production fixtures for the flagship:** six `se-prod-v1` cases injected as a sensitive env var; “Production cases” badge; no hidden text in page HTML or any of the 9 deployed client scripts.
@@ -20,6 +21,8 @@ Last updated: 2026-10-19.
 - [x] **Server protection:** 40–4,000 character bounds, 16 KB body cap, 20 s/45 s timeouts, 3-way concurrency, 6/min + 40/hour per IP, 900 counted calls/day (a retry may add one uncounted request, so the hard worst case is 1,800); live HTTP checks returned 422/413/503/429 as specified.
 - [x] **Unit and browser suites:** 145 Vitest tests and 3 Playwright flows pass (including a mobile starter-prompt flow and a prompt-diff unit suite); typecheck and production build clean.
 - [x] **Documentation:** README includes measured latency, rate limits, reasoning-token diagnosis and the live evaluation record.
+- [x] **Submission hygiene:** an automated scan of every staged text file against the production fixture bundle found no hidden inputs, order IDs or amounts; the remaining explicit values were removed from tests and comments. Expanded-result screenshots show the check trail only, with raw responses collapsed, so private case text is not in the images.
+- [x] **Submission copy:** the AI-drafted description was removed. `devpost/SUBMISSION_FIELDS.md` lists required fields and evidence only; the name, descriptions and exit-survey answers must be learner-written.
 
 ## Stub-verified only (must not be presented as live)
 
@@ -29,8 +32,8 @@ Last updated: 2026-10-19.
 ## Remaining before submission
 
 - [ ] **Record the demo (under 3:00; target 2:45)** using `devpost/DEMO_SCRIPT.md` and the deployed URL. Upload it publicly to YouTube or Vimeo.
-- [ ] **Publish the repository.** The MIT licence and `LICENSE` file are in place. The repository is still initialised on `main` with **no commits and no remote**: make the first commit, confirm `.env.*`, `.fixtures/` and `devpost/learner-profile.md` stay untracked, create the public repository, and push.
-- [ ] **Devpost form:** write the name, short description, text description and exit-survey answers yourself. `devpost/SUBMISSION_FIELDS.md` lists the required fields and the evidence to point at; it intentionally contains no draft copy. Still needs the repository URL, video URL and thumbnail through the form.
+- [ ] **Devpost form:** write the name, short description, text description and exit-survey answers yourself. `devpost/SUBMISSION_FIELDS.md` lists the required fields and the evidence to point at; it intentionally contains no draft copy. The repository URL is ready; still needs the video URL and thumbnail through the form.
+- [ ] **Keep the public deployment within the free-tier budget while judges test it.** The daily budget resets at midnight UTC; a burst can exhaust the 8,000-token/minute window and leave a case unresolved (labelled, not blamed on the prompt).
 - [ ] **Private fixture sets for Following Rules and Rewrite.** Both currently run on labelled samples; their hidden sets should be authored and injected the same way as the flagship.
 - [ ] **Upstash Redis (recommended security upgrade).** Without it, rate limits and the daily budget are per serverless instance, not globally shared. Provision it through the Vercel Marketplace and set `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`.
 - [ ] **Judge calibration pass.** The judge passed a vague case-4 response in every live run; record agreement across repeated identical calls before making any accuracy claim.

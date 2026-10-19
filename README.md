@@ -27,7 +27,8 @@ The Playwright run starts `tests/support/fake-provider.mjs` and points the app a
 
 ## Deployment
 
-**Live:** <https://prompt-gym-three.vercel.app> (Vercel project `prompt-gym`, production).
+**Live:** <https://prompt-gym-three.vercel.app> (Vercel project `prompt-gym`, production).  
+**Repository:** <https://github.com/radhika-verma06/prompt-gym> (public, MIT).
 
 - `GROQ_API_KEY` and `PACK_FIXTURES_JSON_B64` are stored as **sensitive production environment variables** in Vercel; neither is in the repository or the client bundle.
 - Deployment Protection (Vercel Authentication) was disabled so the app is publicly reachable.
