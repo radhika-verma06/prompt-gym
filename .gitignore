@@ -28,3 +28,4 @@ playwright-report/
 /.fixtures/
 .vercel
 .env*
+!.env.example
