@@ -4,7 +4,7 @@ Last updated: 2026-10-19.
 
 ## Live and verified
 
-- [x] **Public repository:** https://github.com/radhika-verma06/prompt-gym (public, first commit pushed 2026-10-19, MIT licence detected by GitHub). `.env.*`, `.fixtures/`, the learner profile and the skill pack are untracked. A fresh clone with no `.env` installed, passed 145 tests and built successfully.
+- [x] **Public repository:** https://github.com/radhika-verma06/prompt-gym (public, first commit pushed 2026-10-19, MIT licence detected by GitHub). `.env.*`, `.fixtures/`, the learner profile and the skill pack are untracked. A fresh clone with no `.env` installed, `cp .env.example .env.local` works, and 145 tests plus the production build pass.
 - [x] **Public deployment:** https://prompt-gym-three.vercel.app (Vercel production, Deployment Protection disabled). Redeployed 2026-10-19 with provider-limit handling.
 - [x] **Real model evaluation:** `openai/gpt-oss-20b` under test, `openai/gpt-oss-120b` judge, `temperature: 0`, `reasoning_effort: low`, 1200/800 output tokens.
 - [x] **Private production fixtures for the flagship:** six `se-prod-v1` cases injected as a sensitive env var; “Production cases” badge; no hidden text in page HTML or any of the 9 deployed client scripts.
