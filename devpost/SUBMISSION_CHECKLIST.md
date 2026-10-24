@@ -1,6 +1,14 @@
 # Submission checklist — Prompt Gym
 
-Last updated: 2026-10-19.
+Last updated: 2026-10-24.
+
+**Reverified 2026-10-24:** 145 tests, typecheck and production build pass; a live `POST /api/run` on the
+deployed URL returned six production-fixture cases in 2.45 s with no error events; the repository is
+public with MIT; `git log -p` contains no key material; `devpost/learner-profile.md` and `.fixtures/`
+remain untracked. The missing `devpost/checklist.md` and `devpost/app-map.html` that the other documents
+referenced now exist. The repository's About section now points at the live URL.
+
+The two hard blockers are unchanged and are yours: the **demo video** and the **written submission**.
 
 ## Live and verified
 
@@ -32,7 +40,7 @@ Last updated: 2026-10-19.
 ## Remaining before submission
 
 - [ ] **Record the demo (under 3:00; target 2:45)** using `devpost/DEMO_SCRIPT.md` and the deployed URL. Upload it publicly to YouTube or Vimeo.
-- [ ] **Devpost form:** write the name, short description, text description and exit-survey answers yourself. `devpost/SUBMISSION_FIELDS.md` lists the required fields and the evidence to point at; it intentionally contains no draft copy. The repository URL is ready; still needs the video URL and thumbnail through the form.
+- [ ] **Devpost form:** write the name, short description, text description and exit-survey answers yourself. `devpost/SUBMISSION_FIELDS.md` lists the required fields and the evidence to point at; it intentionally contains no draft copy. The repository URL is ready; still needs the video URL and thumbnail through the form (thumbnail: `devpost/screenshots/readme/hero.png`).
 - [ ] **Keep the public deployment within the free-tier budget while judges test it.** The daily budget resets at midnight UTC; a burst can exhaust the 8,000-token/minute window and leave a case unresolved (labelled, not blamed on the prompt).
 - [ ] **Private fixture sets for Following Rules and Rewrite.** Both currently run on labelled samples; their hidden sets should be authored and injected the same way as the flagship.
 - [ ] **Upstash Redis (recommended security upgrade).** Without it, rate limits and the daily budget are per serverless instance, not globally shared. Provision it through the Vercel Marketplace and set `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`.

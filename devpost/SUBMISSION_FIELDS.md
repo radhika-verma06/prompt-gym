@@ -13,7 +13,9 @@ it deliberately contains no draft wording.
       licence visible in the repository's About section.
 - [ ] **Demo video URL** — YouTube or Vimeo, publicly visible, **under 3 minutes**, showing the
       project working end to end.
-- [ ] **Built-with tags** — choose the ones the project actually uses.
+- [ ] **Built-with tags** — choose the ones the project actually uses. From `package.json`, the
+      deployed source uses: Next.js 16, React 19, TypeScript, Tailwind CSS, Zod, the OpenAI-compatible
+      Groq API (`openai/gpt-oss-20b` under test, `openai/gpt-oss-120b` judge), Vercel, Vitest and Playwright.
 - [ ] **Thumbnail** — use one of the screenshots in `devpost/screenshots/`.
 - [ ] **Exit survey** — your own reflections.
 

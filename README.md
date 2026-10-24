@@ -1,12 +1,16 @@
 # Prompt Gym
 
+**Try it: <https://prompt-gym-three.vercel.app>** — no sign-up, nothing to install.
+
 Write a prompt, run it against six hidden cases, and see exactly which behaviour broke — and what your fix breaks next.
+
+![Prompt Gym landing page](devpost/screenshots/readme/hero.png)
 
 Three packs: **Structured Extraction** (flagship), **Following Rules**, **Rewrite Without Losing Meaning**.
 
 ## Project documents
 
-The planning trail generated during the build is in `devpost/`: [`scope.md`](devpost/scope.md), [`prd.md`](devpost/prd.md) and [`spec.md`](devpost/spec.md), plus the design notes, demo script and submission checklist.
+The planning trail generated during the build is in `devpost/`: [`scope.md`](devpost/scope.md), [`prd.md`](devpost/prd.md) and [`spec.md`](devpost/spec.md), plus [the build checklist](devpost/checklist.md), [the design notes](devpost/DESIGN.md), [an app map](devpost/app-map.html), [the demo script](devpost/DEMO_SCRIPT.md) and [the submission checklist](devpost/SUBMISSION_CHECKLIST.md).
 
 ---
 
@@ -28,6 +32,15 @@ npm run build
 ```
 
 The Playwright run starts `tests/support/fake-provider.mjs` and points the app at it. Its outputs are fixed test data used to verify the interface and the streaming loop; it is not a demo and its scores are not presented as real evaluations.
+
+## Screenshots
+
+| Landing | Workspace | Results |
+|---|---|---|
+| [![Landing](devpost/screenshots/readme/hero.png)](devpost/screenshots/landing-desktop.png) | [![Workspace](devpost/screenshots/workspace-desktop.png)](devpost/screenshots/workspace-desktop.png) | [![Results](devpost/screenshots/results-expanded-desktop.png)](devpost/screenshots/results-expanded-desktop.png) |
+
+All screenshots come from real runs against the deployed build. The shape of each one is deterministic; the
+scores in them are single observations, not averages.
 
 ## Deployment
 

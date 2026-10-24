@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prompt Gym — app map</title>
+<style>
+  :root {
+    --paper: #f7f1e6;
+    --ink: #1b2a5b;
+    --ink-soft: #4a5578;
+    --line: #ddd2bd;
+    --green: #1f6f5c;
+    --amber: #b4611b;
+    --card: #fffdf8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 48px 24px 96px;
+    background: var(--paper);
+    color: var(--ink);
+    font: 16px/1.6 "Nunito Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 980px; margin: 0 auto; }
+  h1 { font-size: 40px; line-height: 1.1; margin: 0 0 8px; letter-spacing: -0.02em; }
+  h2 { font-size: 22px; margin: 48px 0 12px; letter-spacing: -0.01em; }
+  p.lede { color: var(--ink-soft); margin: 0 0 8px; }
+  .note {
+    border-left: 3px solid var(--amber);
+    background: var(--card);
+    padding: 12px 16px;
+    margin: 20px 0;
+    color: var(--ink-soft);
+    font-size: 15px;
+  }
+  table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: #f0e7d6; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.06em; }
+  code { font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 13px; background: #efe6d5; padding: 1px 5px; border-radius: 4px; }
+  pre {
+    background: #14213d; color: #f7f1e6; padding: 18px 20px; border-radius: 10px;
+    overflow-x: auto; font-size: 13px; line-height: 1.55;
+  }
+  ul { padding-left: 20px; }
+  li { margin: 4px 0; }
+  a { color: var(--green); }
+  footer { margin-top: 56px; color: var(--ink-soft); font-size: 14px; border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Prompt Gym — app map</h1>
+  <p class="lede">A code tour of the deployed build: one request, where it goes, and which module decides each verdict.</p>
+  <p class="lede">Source: <a href="https://github.com/radhika-verma06/prompt-gym">github.com/radhika-verma06/prompt-gym</a> · Live: <a href="https://prompt-gym-three.vercel.app">prompt-gym-three.vercel.app</a></p>
+
+  <div class="note">
+    Reconstructed from the repository as it stands (verified 2026-10-24) rather than from memory: file paths,
+    route names and test counts below were read from the tracked tree, not recalled.
+  </div>
+
+  <h2>The whole app in one path</h2>
+<pre>browser (app/workspace/[packId]/page.tsx)
+  └─ Workspace.tsx  — editor, run button, streaming reader
+       │  POST /api/run  { packId, prompt }
+       ▼
+app/api/run/route.ts
+  ├─ lib/limits.ts            rate limit, daily budget, body cap, timeouts
+  ├─ lib/fixtures/load.ts     picks the private set, else labelled samples
+  │    └─ lib/fixtures/schema.ts  Zod validation of every case
+  ├─ lib/run.ts               runs the six cases, 3 at a time, streams events
+  │    ├─ lib/model/client.ts     OpenAI-compatible call + failure classification
+  │    ├─ lib/validators/deterministic.ts   Tier A — rules, no model
+  │    ├─ lib/validators/judge.ts           Tier B — constrained judge
+  │    ├─ lib/redact.ts           withholds a response that echoes its input
+  │    └─ lib/scoring.ts          aggregates states into a score
+  └─ streamed NDJSON: meta → case → case → … → done
+       ▼
+Workspace.tsx
+  ├─ lib/regression.ts   compares this attempt with the previous one
+  ├─ lib/prompt-diff.ts  line-level diff of the two prompts
+  ├─ lib/lesson.ts       "what this attempt shows", from criteria actually tested
+  └─ lib/export/markdown.ts  downloadable report built only from local state</pre>
+
+  <h2>Routes</h2>
+  <table>
+    <tr><th>Path</th><th>What it is</th></tr>
+    <tr><td><code>/</code></td><td>Landing page: headline, demo board, three challenge cards, how a run works, first-run intro.</td></tr>
+    <tr><td><code>/workspace/[packId]</code></td><td>The arena: mission card with objective and criteria, prompt editor, six case tiles, score, regression panel, lesson, history, export.</td></tr>
+    <tr><td><code>POST /api/run</code></td><td>The only server route. Validates the body, enforces limits, loads fixtures, streams results.</td></tr>
+  </table>
+
+  <h2>Library modules that carry the product's promises</h2>
+  <table>
+    <tr><th>Module</th><th>Responsibility</th><th>Promise it keeps</th></tr>
+    <tr><td><code>lib/fixtures/load.ts</code></td><td>Reads <code>PACK_FIXTURES_JSON_B64</code> (or raw JSON), validates with Zod, falls back to <code>fixtures/sample/</code>.</td><td>Hidden inputs stay server-side; a fallback is always labelled, never silent.</td></tr>
+    <tr><td><code>lib/run.ts</code></td><td>One call per case with the learner's prompt verbatim, three in flight, one event per resolution.</td><td>Six real evaluations, streamed as they land — no progress simulation.</td></tr>
+    <tr><td><code>lib/validators/deterministic.ts</code></td><td>JSON shape, exact keys, absent values, amount sets, request counts, word limits, phrase rules, fact retention.</td><td>Most verdicts are rules, so they can be read and re-derived.</td></tr>
+    <tr><td><code>lib/validators/judge.ts</code></td><td>One Tier B criterion per pack, judged by a second model that never sees the learner's prompt.</td><td>The judge cannot be talked into a pass by prompt wording.</td></tr>
+    <tr><td><code>lib/redact.ts</code></td><td>Withholds a response that reproduces the hidden input; span mode by default, whole-input-only for rewrites.</td><td>Hidden text can't leak through a model's echo, but correct answers stay visible.</td></tr>
+    <tr><td><code>lib/scoring.ts</code></td><td>Pass / fail / uncertain / unresolved → score and denominator.</td><td>Uncertain leaves the denominator; unresolved is never counted as a failure.</td></tr>
+    <tr><td><code>lib/regression.ts</code></td><td>Observed flips, comparability checks, optional hypothesis gated on a single flip and a small diff.</td><td>Observation and explanation are different types, and the app says which one it is giving.</td></tr>
+    <tr><td><code>lib/limits.ts</code></td><td>Per-IP rate limits, daily model-call budget, body cap, timeouts; Upstash when configured, otherwise process memory.</td><td>A public endpoint that spends money is bounded, and the README says where the bound is weaker.</td></tr>
+    <tr><td><code>lib/model/client.ts</code></td><td>OpenAI-compatible call, one bounded retry for a rate-limit, classification of rate limit / outage / timeout.</td><td>A provider problem is reported as a provider problem.</td></tr>
+  </table>
+
+  <h2>Components</h2>
+  <table>
+    <tr><th>Area</th><th>Files</th></tr>
+    <tr><td>Landing</td><td><code>HeroBoard</code>, <code>ChallengeCard</code>, <code>PackCard</code>, <code>HowItWorks</code>, <code>FirstRunIntro</code>, <code>SiteHeader</code></td></tr>
+    <tr><td>Arena</td><td><code>Workspace</code>, <code>MissionCard</code>, <code>PromptEditor</code>, <code>Arena</code>, <code>CaseTile</code>, <code>ScoreOrbit</code></td></tr>
+    <tr><td>After a run</td><td><code>RegressionMoment</code>, <code>PromptDiff</code>, <code>LearningSummary</code>, <code>ScoreHistory</code>, <code>ExportMenu</code></td></tr>
+    <tr><td>Shared</td><td><code>PackArt</code> (illustrations), <code>icons</code>, <code>Reveal</code>, <code>SpotlightCard</code>, <code>Tally</code></td></tr>
+  </table>
+
+  <h2>Where the secrets are (and aren't)</h2>
+  <ul>
+    <li><code>GROQ_API_KEY</code> — server-only Vercel environment variable; read in <code>lib/model/client.ts</code> and never exported to a component.</li>
+    <li><code>PACK_FIXTURES_JSON_B64</code> — server-only; the hidden inputs and acceptable answers.</li>
+    <li>The browser receives case results, never case inputs. The export is assembled from browser state, so it cannot include one.</li>
+    <li><code>.env*</code>, <code>.fixtures/</code> and <code>devpost/learner-profile.md</code> are ignored; <code>git log -p</code> was scanned for key material and none was ever committed.</li>
+  </ul>
+
+  <h2>Tests and scripts</h2>
+  <ul>
+    <li><code>tests/*.test.ts</code> — 15 files, 145 Vitest tests, no network. They cover validators, scoring, regression, redaction, fixtures, limits, export, lesson and provider failure handling.</li>
+    <li><code>tests/flow.spec.ts</code> — one Playwright pass against <code>tests/support/fake-provider.mjs</code>, proving progressive rendering, the export contents and the regression panel deterministically. Its scores are stub data and are never cited as model results.</li>
+    <li><code>scripts/live-check.mjs</code> — drives the deployed build against the real provider and writes the screenshots in <code>devpost/screenshots/</code>.</li>
+    <li><code>scripts/probe-provider.ts</code> — measures which models the key can reach, latency, JSON-mode support and rate-limit headers.</li>
+  </ul>
+
+  <footer>
+    Prompt Gym · MIT licensed · app map written from the tracked source on 2026-10-24.
+  </footer>
+</main>
+</body>
+</html>
