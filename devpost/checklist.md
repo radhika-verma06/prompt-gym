@@ -45,9 +45,9 @@ Re-run the first three before submitting; they take under a minute.
 Honest state of the promises the interface makes:
 
 - **"Six real model runs"** — true; the live run above made six provider calls.
-- **"Hidden cases"** — true for the flagship (private set, server-only). **Not yet true for Following
-  Rules and Rewrite**, which still run on `fixtures/sample/` and say so with a badge. A judge who opens
-  either pack sees the weaker, labelled version.
+- **"Hidden cases"** — true for all three packs: `se-prod-v1`, `fr-prod-v1` and `rw-prod-v1` are
+  server-only, and each pack shows the **Production cases** badge. A clone without the env var falls back
+  to the labelled sample set and says so.
 - **"Uncertain and unresolved are real states"** — covered by unit tests and reached in live runs.
 - **"No prompt wording can reach the judge"** — true by construction: the judge call receives the
   criterion, the hidden message and the response only.
@@ -73,6 +73,5 @@ Learner-owned, because the hackathon requires their own words and their own reco
 
 Optional, in value order:
 
-- [ ] Author private fixture sets for Following Rules and Rewrite so all three packs are hidden.
 - [ ] Configure Upstash Redis so the rate limit and daily budget are shared across instances.
 - [ ] Calibrate the judge against repeated identical calls before any accuracy claim.

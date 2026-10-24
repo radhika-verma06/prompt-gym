@@ -49,7 +49,7 @@ scores in them are single observations, not averages.
 
 - `GROQ_API_KEY` and `PACK_FIXTURES_JSON_B64` are stored as **sensitive production environment variables** in Vercel; neither is in the repository or the client bundle.
 - Deployment Protection (Vercel Authentication) was disabled so the app is publicly reachable.
-- The flagship serves the private `se-prod-v1` set (six cases, distinct from the public samples) and shows the **Production cases** badge. Following Rules and Rewrite currently fall back to labelled **Sample cases**.
+- All three packs serve a private production set — `se-prod-v1`, `fr-prod-v1`, `rw-prod-v1`, six cases each, distinct from the public samples — and each shows the **Production cases** badge. A clone with no configuration falls back to the labelled **Sample cases**.
 - Deployed checks (reverified after the 2026-10-19 redeploy): home `200` in 890 ms; HTML contains no hidden input; production API run returned 6/6 with zero errors, complete in 1,039 ms (2,052 ms round trip); desktop and mobile landing pages have no horizontal overflow.
 - **Budget caveat:** Upstash is not configured, so the rate limit and daily budget are per serverless instance, not shared globally. This is the weaker guarantee described above; the hard per-run cost is still bounded.
 
@@ -216,7 +216,7 @@ The export is built only from data the browser already holds, so it cannot conta
 
 ## Known limitations
 
-- **Only the flagship has a private production set.** It is stored outside the tracked tree (`.fixtures/production.json`, base64 in `.env.production.local`) and was verified live and on the deployment. Following Rules and Rewrite still run on labelled samples until their private sets are authored.
+- **The private sets live outside the tracked tree.** All three are in one bundle (`.fixtures/production.json`, base64 in the `PACK_FIXTURES_JSON_B64` production variable) and were verified live on the deployment. What a clone sees without that variable is the labelled sample set, and the workspace says which one it is running.
 - **The judge is a constrained classifier, not an oracle.** It passed a vague case-4 response in every live run and its probe reason mentioned “extra fields” that were not present. Its verdicts are reproducible at low reasoning effort but not identical to a human reading.
 - **The shared budget is only truly shared with Redis configured.** Without it the limit is per instance — including on the current deployment. Upstash still needs provisioning.
 - **Latency varies.** Two measured samples of the same subject call differed by ~380 ms; the app makes no latency claim and times out per call.
